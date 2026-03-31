@@ -11,8 +11,8 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/terraform"
 
-	clusterv1beta1 "github.com/crossplane/upjet-provider-template/apis/cluster/v1beta1"
-	namespacedv1beta1 "github.com/crossplane/upjet-provider-template/apis/namespaced/v1beta1"
+	clusterv1beta1 "github.com/vikreinok/provider-dynatrace/apis/cluster/v1beta1"
+	namespacedv1beta1 "github.com/vikreinok/provider-dynatrace/apis/namespaced/v1beta1"
 )
 
 const (
@@ -51,10 +51,13 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 		}
 
 		// Set credentials in Terraform provider configuration.
-		/*ps.Configuration = map[string]any{
-			"username": creds["username"],
-			"password": creds["password"],
-		}*/
+		ps.Configuration = map[string]any{
+			"dt_env_url":        creds["dt_env_url"],
+			"dt_api_token":      creds["dt_api_token"],
+			"iam_account_id":    creds["iam_account_id"],
+			"iam_client_id":     creds["iam_client_id"],
+			"iam_client_secret": creds["iam_client_secret"],
+		}
 		return ps, nil
 	}
 }

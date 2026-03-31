@@ -5,7 +5,7 @@ on:
     inputs:
       version:
         description: "Version string to use while publishing the package (e.g. v1.0.0-alpha.1)"
-        default: ''
+        default: 'v0.1.0'
         required: false
       go-version:
         description: 'Go version to use if building needs to be done'
@@ -16,7 +16,7 @@ jobs:
   publish-provider-package:
     uses: crossplane-contrib/provider-workflows/.github/workflows/publish-provider.yml@main
     with:
-      repository: provider-template
+      repository: provider-dynatrace
       version: ${{ github.event.inputs.version }}
       go-version: ${{ github.event.inputs.go-version }}
       cleanup-disk: true

@@ -10,9 +10,9 @@ package cluster
 import (
 	"k8s.io/apimachinery/pkg/runtime"
 
-	v1alpha1 "github.com/crossplane/upjet-provider-template/apis/cluster/null/v1alpha1"
-	v1alpha1cluster "github.com/crossplane/upjet-provider-template/apis/cluster/v1alpha1"
-	v1beta1 "github.com/crossplane/upjet-provider-template/apis/cluster/v1beta1"
+	v1alpha1 "github.com/vikreinok/provider-dynatrace/apis/cluster/iam/v1alpha1"
+	v1alpha1cluster "github.com/vikreinok/provider-dynatrace/apis/cluster/v1alpha1"
+	v1beta1 "github.com/vikreinok/provider-dynatrace/apis/cluster/v1beta1"
 )
 
 func init() {

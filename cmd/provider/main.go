@@ -34,14 +34,14 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	apisCluster "github.com/crossplane/upjet-provider-template/apis/cluster"
-	apisNamespaced "github.com/crossplane/upjet-provider-template/apis/namespaced"
-	"github.com/crossplane/upjet-provider-template/config"
-	"github.com/crossplane/upjet-provider-template/internal/clients"
-	controllerCluster "github.com/crossplane/upjet-provider-template/internal/controller/cluster"
-	controllerNamespaced "github.com/crossplane/upjet-provider-template/internal/controller/namespaced"
-	"github.com/crossplane/upjet-provider-template/internal/features"
-	"github.com/crossplane/upjet-provider-template/internal/version"
+	apisCluster "github.com/vikreinok/provider-dynatrace/apis/cluster"
+	apisNamespaced "github.com/vikreinok/provider-dynatrace/apis/namespaced"
+	"github.com/vikreinok/provider-dynatrace/config"
+	"github.com/vikreinok/provider-dynatrace/internal/clients"
+	controllerCluster "github.com/vikreinok/provider-dynatrace/internal/controller/cluster"
+	controllerNamespaced "github.com/vikreinok/provider-dynatrace/internal/controller/namespaced"
+	"github.com/vikreinok/provider-dynatrace/internal/features"
+	"github.com/vikreinok/provider-dynatrace/internal/version"
 )
 
 const (
@@ -84,7 +84,7 @@ func main() {
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
 	zl := zap.New(zap.UseDevMode(*debug))
-	log := logging.NewLogrLogger(zl.WithName("upjet-provider-template"))
+	log := logging.NewLogrLogger(zl.WithName("provider-dynatrace"))
 	if *debug {
 		// The controller-runtime runs with a no-op logger by default. It is
 		// *very* verbose even at info level, so we only provide it a real
@@ -121,7 +121,7 @@ func main() {
 
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		LeaderElection:   *leaderElection,
-		LeaderElectionID: "crossplane-leader-election-upjet-provider-template",
+		LeaderElectionID: "crossplane-leader-election-provider-dynatrace",
 		Cache: cache.Options{
 			SyncPeriod: syncPeriod,
 		},

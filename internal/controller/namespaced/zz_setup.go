@@ -9,15 +9,21 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/controller"
 
-	resource "github.com/crossplane/upjet-provider-template/internal/controller/namespaced/null/resource"
-	providerconfig "github.com/crossplane/upjet-provider-template/internal/controller/namespaced/providerconfig"
+	group "github.com/vikreinok/provider-dynatrace/internal/controller/namespaced/iam/group"
+	policy "github.com/vikreinok/provider-dynatrace/internal/controller/namespaced/iam/policy"
+	policybindingsv2 "github.com/vikreinok/provider-dynatrace/internal/controller/namespaced/iam/policybindingsv2"
+	policyboundary "github.com/vikreinok/provider-dynatrace/internal/controller/namespaced/iam/policyboundary"
+	providerconfig "github.com/vikreinok/provider-dynatrace/internal/controller/namespaced/providerconfig"
 )
 
 // Setup creates all controllers with the supplied logger and adds them to
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		resource.Setup,
+		group.Setup,
+		policy.Setup,
+		policybindingsv2.Setup,
+		policyboundary.Setup,
 		providerconfig.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
@@ -31,7 +37,10 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 // the supplied manager gated.
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		resource.SetupGated,
+		group.SetupGated,
+		policy.SetupGated,
+		policybindingsv2.SetupGated,
+		policyboundary.SetupGated,
 		providerconfig.SetupGated,
 	} {
 		if err := setup(mgr, o); err != nil {
