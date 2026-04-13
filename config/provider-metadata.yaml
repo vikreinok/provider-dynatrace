@@ -1169,11 +1169,11 @@ resources:
         name: dynatrace_attribute_allow_list
         title: dynatrace_attribute_allow_list Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: list
               manifest: |-
                 {
                   "enabled": true,
-                  "key": "attribute.example"
+                  "key": "attribute.#name#"
                 }
         argumentDocs:
             builtin:attribute-allow-list: )
@@ -1866,13 +1866,13 @@ resources:
         name: dynatrace_automation_controller_connections
         title: dynatrace_automation_controller_connections Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
                   "name": "#name#",
                   "token": "#######",
                   "type": "api-token",
-                  "url": "https://www.google.com"
+                  "url": "https://www.example.com"
                 }
         argumentDocs:
             app:dynatrace.redhat.ansible:automation-controller.connection: )
@@ -9292,13 +9292,13 @@ resources:
         name: dynatrace_automation_workflow
         title: dynatrace_automation_workflow Resource - terraform-provider-dynatrace
         examples:
-            - name: Sample_Worklow_TF
+            - name: workflow_with_davis_event_trigger
               manifest: |-
                 {
-                  "actor": "########-####-####-####-############",
+                  "actor": "${dynatrace_iam_service_user.wf_user.id}",
                   "description": "Desc",
-                  "owner": "########-####-####-####-############",
-                  "private": true,
+                  "owner": "${dynatrace_iam_service_user.wf_user.id}",
+                  "private": false,
                   "tasks": [
                     {
                       "task": [
@@ -9306,12 +9306,19 @@ resources:
                           "action": "dynatrace.automations:http-function",
                           "active": true,
                           "description": "Issue an HTTP request to any API",
-                          "input": "${jsonencode({\n        \"method\" : \"GET\",\n        \"url\" : \"https://www.google.at/\"\n      })}",
+                          "input": "${jsonencode({\n        \"method\": \"GET\",\n        \"url\": \"https://www.example.com/\"\n      })}",
                           "name": "http_request_1",
                           "position": [
                             {
                               "x": 0,
                               "y": 1
+                            }
+                          ],
+                          "retry": [
+                            {
+                              "count": "3",
+                              "delay": "1000",
+                              "failed_loop_iterations_only": false
                             }
                           ]
                         },
@@ -9328,7 +9335,7 @@ resources:
                             }
                           ],
                           "description": "Issue an HTTP request to any API",
-                          "input": "${jsonencode({\n        \"method\" : \"GET\",\n        \"url\" : \"https://www.second-task.com/\"\n      })}",
+                          "input": "${jsonencode({\n        \"method\": \"GET\",\n        \"url\": \"https://www.example.com/\"\n      })}",
                           "name": "http_request_2",
                           "position": [
                             {
@@ -9350,7 +9357,7 @@ resources:
                             }
                           ],
                           "description": "Issue an HTTP request to any API",
-                          "input": "${jsonencode({\n        \"method\" : \"GET\",\n        \"url\" : \"https://www.third-task.com\"\n      })}",
+                          "input": "${jsonencode({\n        \"method\": \"GET\",\n        \"url\": \"https://www.example.com\"\n      })}",
                           "name": "http_request_3",
                           "position": [
                             {
@@ -9363,7 +9370,7 @@ resources:
                           "action": "dynatrace.automations:run-javascript",
                           "active": false,
                           "description": "Build a custom task running js Code",
-                          "input": "${jsonencode({\n        \"script\" : \"// optional import of sdk modules\\nimport { execution } from '@dynatrace-sdk/automation-utils';\\n\\nexport default async function ({ execution_id }) {\\n  // your code goes here\\n  // e.g. get the current execution\\n  const ex = await execution(execution_id);\\n  console.log('Automated script execution on behalf of', ex.trigger);\\n  \\n  return { triggeredBy: ex.trigger };\\n}\"\n      })}",
+                          "input": "${jsonencode({\n        \"script\": \"// optional import of sdk modules\\nimport { execution } from '@dynatrace-sdk/automation-utils';\\n\\nexport default async function ({ execution_id }) {\\n  // your code goes here\\n  // e.g. get the current execution\\n  const ex = await execution(execution_id);\\n  console.log('Automated script execution on behalf of', ex.trigger);\\n  \\n  return { triggeredBy: ex.trigger };\\n}\"\n      })}",
                           "name": "run_javascript_1",
                           "position": [
                             {
@@ -9375,7 +9382,7 @@ resources:
                       ]
                     }
                   ],
-                  "title": "Sample Worklow TF1",
+                  "title": "#name#",
                   "trigger": [
                     {
                       "event": [
@@ -9400,14 +9407,22 @@ resources:
                     }
                   ]
                 }
+              references:
+                actor: dynatrace_iam_service_user.wf_user.id
+                owner: dynatrace_iam_service_user.wf_user.id
+              dependencies:
+                dynatrace_iam_service_user.wf_user: |-
+                    {
+                      "name": "#name#"
+                    }
         argumentDocs:
             action: (String) Specifies the action type for the task. Examples include dynatrace.automations:http-function, dynatrace.automations:run-javascript, and dynatrace.automations:execute-dql-query. Additional action types are also supported.
             active: (Boolean) Specifies whether a task should be skipped as a no operation or not
             actor: (String) The user context the executions of the workflow will happen with
             analysis_ready: (Boolean) If set to true, the workflow will only be triggered after the initial root cause analysis run is completed
             availability: (Boolean)
-            between_end: (String) Triggers the schedule every n minutes within a given time frame - specifying the end time on any valid day in 24h format (e.g. 14:22:44). Conflicts with cron and time. Required with interval_minutes and between_start
-            between_start: (String) Triggers the schedule every n minutes within a given time frame - specifying the start time on any valid day in 24h format (e.g. 13:22:44). Conflicts with cron and time. Required with interval_minutes and between_end
+            between_end: (String) Triggers the schedule every n minutes within a given time frame - specifying the end time on any valid day in 24h format (e.g. 14:22). Conflicts with cron and time. Required with interval_minutes and between_start
+            between_start: (String) Triggers the schedule every n minutes within a given time frame - specifying the start time on any valid day in 24h format (e.g. 13:22). Conflicts with cron and time. Required with interval_minutes and between_end
             categories: '(Block List, Min: 1) (see below for nested schema)'
             concurrency: (String) Required if with_items is specified. By default loops execute sequentially with concurrency set to 1. You can increase how often it runs in parallel
             conditions: '(Block List, Max: 1) Conditions that have to be met in order to execute that task (see below for nested schema)'
@@ -9420,32 +9435,37 @@ resources:
             davis_problem: '(Block List, Max: 1) Contains trigger configuration based on Davis Problems. Either davis_event, davis_problem, davis_event or config need to set (see below for nested schema)'
             delay: '(String) Specifies a delay in seconds between subsequent task retries. You can specify either a number between 1 and 3600 here or an expression ({{...}}). Default: 1'
             description: (String) An optional description for the workflow
-            earliest_start: (String) If specified, the schedule won't trigger executions before the given date
-            earliest_start_time: (String) If specified, the schedule won't trigger executions before the given time
+            earliest_start: '(String) If specified, the schedule won''t trigger executions before the given date. Format: yyyy-MM-dd'
+            earliest_start_time: '(String) If specified, the schedule won''t trigger executions before the given time. Format: HH:mm'
             else: (String) Possible values are SKIP and STOP
             entity_tags: (Map of String) key/value pairs for entity tags to match for. For tags that don't require a value, just specify an empty string as value. Multiple values can be provided separated by whitespace (e.g. "val1 val2") and will be parsed as multiple tag values. Omit this attribute if all entities should match
             entity_tags_match: '(String) Specifies whether all or just any of the configured entity tags need to match. Possible values: all and any. Omit this attribute if all entities should match'
             error: (Boolean)
             event: '(Block List, Max: 1) If specified the workflow is getting triggered based on events (see below for nested schema)'
             event_type: '(String) Possible values: events or bizevents. Default: events'
-            exclude_dates: (Set of String) If specified, the schedule won't trigger exeuctions on the given dates
+            exclude_dates: '(Set of String) If specified, the schedule won''t trigger exeuctions on the given dates. Format: yyyy-MM-dd'
             failed_loop_iterations_only: '(Boolean) Specifies whether retrying the failed iterations or the whole loop. Default: true'
             filter_parameters: '(Block List, Max: 1) Advanced restrictions for the schedule to trigger executions (see below for nested schema)'
+            guide: (String) Informational guide text for the workflow
+            hourly_execution_limit: (Number) Maximum number of executions per hour. Default is 1000
             id: (String) The ID of this resource.
-            include_dates: (Set of String) If specified, the schedule will trigger executions on the given dates, even if the main configuration prohibits it
+            include_dates: '(Set of String) If specified, the schedule will trigger executions on the given dates, even if the main configuration prohibits it. Format: yyyy-MM-dd'
             info: (Boolean)
-            input: (String) Parameters and values for this task as JSON code. Contents depend on the kind of task - determined by the attribute action
+            input: (String) Workflow-level input parameters as JSON. These parameters are available to all tasks in the workflow
             interval_minutes: '(Number) Triggers the schedule every n minutes within a given time frame. Minimum: 1, Maximum: 720. Required with between_start and between_end. Conflicts with cron and time'
+            is_deployed: (Boolean) Defines whether this workflow is deployed and active, or kept as a draft. An undeployed workflow is not billed and its automatic trigger will not be running. Default is true
             match: '(String) Possible values: equals and contains. The Davis event name must equal or contain the string provided in attribute name'
             monitoring_unavailable: (Boolean)
             name: (String) The name of the task
             names: '(Block List, Max: 1) The Davis Events to match on (see below for nested schema)'
             on_problem_close: (Boolean) If set to true closing a problem also is considered an event that triggers the execution
             owner: (String) The ID of the owner of this workflow
+            owner_type: (String) The type of the owner. Possible values are USER and GROUP
             position: '(Block List, Max: 1) Layouting information about the task tile when visualized. If not specified Dynatrace will position the task tiles automatically (see below for nested schema)'
             private: (Boolean) Defines whether this workflow is private to the owner or not. Default is true
             query: (String) A query based on DQL for events that trigger executions
             resource: (Boolean)
+            result: (String) The result of the workflow
             retry: '(Block List, Max: 1) Configure whether to automatically rerun the task on failure. If not specified no retries will be attempted (see below for nested schema)'
             rule: (String) Refers to a configured rule that determines at which days the schedule should be active. If not specified it implies that the schedule is valid every day
             schedule: '(Block List, Max: 1) If specified the workflow is getting triggered based on a schedule (see below for nested schema)'
@@ -9453,7 +9473,7 @@ resources:
             states: (Map of String) key/value pairs where the key is the name of another task and the value the status it needs to be for the current task to get executed. Possible values are SUCCESS, ERROR, ANY, OK (Success or Skipped) and NOK (Error or Cancelled)
             task: '(Block Set) TODO: No documentation available (see below for nested schema)'
             tasks: '(Block List, Min: 1, Max: 1) The tasks to run for every execution of this workflow (see below for nested schema)'
-            time: (String) Specifies a fixed time the schedule will trigger at in 24h format (e.g. 14:23:59). Conflicts with cron, interval_minutes, between_start and between_end
+            time: (String) Specifies a fixed time the schedule will trigger at in 24h format (e.g. 14:23). Conflicts with cron, interval_minutes, between_start and between_end
             time_zone: (String) A time zone the scheduled times to align with. If not specified it will be chosen automatically based on the location of the Dynatrace Server
             timeout: (String) Specifies a default task timeout in seconds. 15 * 60 (15min) is used when not set. Minimum 1. Maximum 604800
             title: (String) The title / name of the workflow
@@ -9529,13 +9549,13 @@ resources:
         name: dynatrace_automation_workflow_k8s_connections
         title: dynatrace_automation_workflow_k8s_connections Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
                   "name": "terraform1",
                   "namespace": "terraform1",
                   "token": "dt0e01.000000000000000000000000.0000000000000000000000000000000000000000000000000000000000000000",
-                  "uid": "c6a3798e-634e-49fd-a3ca-00e5c16a1bf3"
+                  "uid": "00000000-0000-0000-0000-000000000000"
                 }
         argumentDocs:
             app:dynatrace.kubernetes.connector:connection: )
@@ -10569,7 +10589,7 @@ resources:
         name: dynatrace_browser_monitor
         title: dynatrace_browser_monitor Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: monitor
               manifest: |-
                 {
                   "anomaly_detection": [
@@ -10592,6 +10612,9 @@ resources:
                       ]
                     }
                   ],
+                  "depends_on": [
+                    "${time_sleep.wait_5_seconds}"
+                  ],
                   "frequency": 15,
                   "key_performance_metrics": [
                     {
@@ -10600,11 +10623,10 @@ resources:
                     }
                   ],
                   "locations": [
-                    "GEOLOCATION-B4B9167CAAA88F6A",
-                    "GEOLOCATION-03E96F97A389F96A"
+                    "${dynatrace_synthetic_location.location.id}"
                   ],
                   "manually_assigned_apps": [
-                    "APPLICATION-EA7C4B59F27D43EB"
+                    "${dynatrace_web_application.application.id}"
                   ],
                   "name": "#name#",
                   "script": [
@@ -10662,16 +10684,16 @@ resources:
                         {
                           "event": [
                             {
-                              "description": "Loading of \"https://www.orf.at\"",
+                              "description": "Loading of \"https://example.com\"",
                               "navigate": [
                                 {
                                   "authentication": [
                                     {
-                                      "creds": "CREDENTIALS_VAULT-26F62024BC3ABBCF",
+                                      "creds": "${dynatrace_credentials.credentials_vault.id}",
                                       "type": "http_authentication"
                                     }
                                   ],
-                                  "url": "https://www.orf.at",
+                                  "url": "https://example.com",
                                   "wait": [
                                     {
                                       "wait_for": "page_complete"
@@ -10686,11 +10708,11 @@ resources:
                                 {
                                   "authentication": [
                                     {
-                                      "creds": "CREDENTIALS_VAULT-26F62024BC3ABBCF",
+                                      "creds": "${dynatrace_credentials.credentials_vault.id}",
                                       "type": "http_authentication"
                                     }
                                   ],
-                                  "url": "https://www.orf.at",
+                                  "url": "https://example.com",
                                   "validate": [
                                     {
                                       "validation": [
@@ -10778,6 +10800,125 @@ resources:
                     }
                   ]
                 }
+              references:
+                locations: dynatrace_synthetic_location.location.id
+                manually_assigned_apps: dynatrace_web_application.application.id
+                script.events.event.navigate.authentication.creds: dynatrace_credentials.credentials_vault.id
+              dependencies:
+                dynatrace_credentials.credentials_vault: |-
+                    {
+                      "description": "my credentials vault",
+                      "name": "#name#",
+                      "password": "password",
+                      "scopes": [
+                        "SYNTHETIC"
+                      ],
+                      "username": "username"
+                    }
+                dynatrace_synthetic_location.location: |-
+                    {
+                      "city": "San Francisco de Asis",
+                      "country_code": "VE",
+                      "deployment_type": "STANDARD",
+                      "latitude": 10.0756,
+                      "location_node_outage_delay_in_minutes": 3,
+                      "longitude": -67.5442,
+                      "name": "#name#",
+                      "region_code": "04"
+                    }
+                dynatrace_web_application.application: |-
+                    {
+                      "cost_control_user_session_percentage": 100,
+                      "custom_action_apdex_settings": [
+                        {
+                          "frustrating_fallback_threshold": 12000,
+                          "frustrating_threshold": 12000,
+                          "tolerated_fallback_threshold": 3000,
+                          "tolerated_threshold": 3000
+                        }
+                      ],
+                      "load_action_apdex_settings": [
+                        {
+                          "frustrating_fallback_threshold": 12000,
+                          "frustrating_threshold": 12000,
+                          "tolerated_fallback_threshold": 3000,
+                          "tolerated_threshold": 3000
+                        }
+                      ],
+                      "load_action_key_performance_metric": "VISUALLY_COMPLETE",
+                      "monitoring_settings": [
+                        {
+                          "add_cross_origin_anonymous_attribute": true,
+                          "advanced_javascript_tag_settings": [
+                            {
+                              "additional_event_handlers": [
+                                {
+                                  "max_dom_nodes": 5000
+                                }
+                              ],
+                              "max_action_name_length": 100,
+                              "max_errors_to_capture": 10
+                            }
+                          ],
+                          "cache_control_header_optimizations": true,
+                          "content_capture": [
+                            {
+                              "resource_timing_settings": [
+                                {
+                                  "instrumentation_delay": 53,
+                                  "non_w3c_resource_timings": true,
+                                  "w3c_resource_timings": true
+                                }
+                              ],
+                              "timeout_settings": [
+                                {
+                                  "temporary_action_limit": 3,
+                                  "temporary_action_total_timeout": 100,
+                                  "timed_action_support": true
+                                }
+                              ]
+                            }
+                          ],
+                          "injection_mode": "JAVASCRIPT_TAG",
+                          "script_tag_cache_duration_in_hours": 1
+                        }
+                      ],
+                      "name": "#name#",
+                      "real_user_monitoring_enabled": true,
+                      "type": "AUTO_INJECTED",
+                      "user_action_naming_settings": [
+                        {}
+                      ],
+                      "waterfall_settings": [
+                        {
+                          "resource_browser_caching_threshold": 50,
+                          "resources_threshold": 100000,
+                          "slow_cnd_resources_threshold": 200000,
+                          "slow_first_party_resources_threshold": 200000,
+                          "slow_third_party_resources_threshold": 200000,
+                          "speed_index_visually_complete_ratio_threshold": 50,
+                          "uncompressed_resources_threshold": 860
+                        }
+                      ],
+                      "xhr_action_apdex_settings": [
+                        {
+                          "frustrating_fallback_threshold": 12000,
+                          "frustrating_threshold": 12000,
+                          "tolerated_fallback_threshold": 3000,
+                          "tolerated_threshold": 3000
+                        }
+                      ],
+                      "xhr_action_key_performance_metric": "VISUALLY_COMPLETE"
+                    }
+                time_sleep.wait_5_seconds: |-
+                    {
+                      "create_duration": "5s",
+                      "depends_on": [
+                        "${dynatrace_synthetic_location.location}",
+                        "${dynatrace_web_application.application}",
+                        "${dynatrace_credentials.credentials_vault}"
+                      ]
+                    }
         argumentDocs:
             action_limit: (Number) Track up to n cascading setTimeout calls
             affected_locations: (Number) The number of affected locations to trigger an alert
@@ -10948,22 +11089,104 @@ resources:
         name: dynatrace_browser_monitor_performance
         title: dynatrace_browser_monitor_performance Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: performance
               manifest: |-
                 {
                   "enabled": true,
-                  "scope": "SYNTHETIC_TEST-1234567890000000",
+                  "scope": "${dynatrace_browser_monitor.monitor.id}",
                   "thresholds": [
                     {
                       "threshold": [
                         {
-                          "event": "SYNTHETIC_TEST-1234567890000000",
+                          "event": "${dynatrace_browser_monitor.monitor.id}",
                           "threshold": 10
                         }
                       ]
                     }
                   ]
                 }
+              references:
+                scope: dynatrace_browser_monitor.monitor.id
+                thresholds.threshold.event: dynatrace_browser_monitor.monitor.id
+              dependencies:
+                dynatrace_browser_monitor.monitor: |-
+                    {
+                      "anomaly_detection": [
+                        {
+                          "loading_time_thresholds": [
+                            {
+                              "enabled": true,
+                              "thresholds": [
+                                {
+                                  "threshold": [
+                                    {
+                                      "event_index": 0,
+                                      "request_index": 0,
+                                      "type": "TOTAL",
+                                      "value_ms": 10000
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "outage_handling": [
+                            {
+                              "global_outage": true,
+                              "global_outage_policy": [
+                                {
+                                  "consecutive_runs": 1
+                                }
+                              ],
+                              "local_outage": false,
+                              "retry_on_error": true
+                            }
+                          ]
+                        }
+                      ],
+                      "frequency": 15,
+                      "key_performance_metrics": [
+                        {
+                          "load_action_kpm": "VISUALLY_COMPLETE",
+                          "xhr_action_kpm": "VISUALLY_COMPLETE"
+                        }
+                      ],
+                      "locations": [
+                        "${data.dynatrace_synthetic_location.location.id}"
+                      ],
+                      "name": "#name#",
+                      "script": [
+                        {
+                          "configuration": [
+                            {
+                              "bypass_csp": true,
+                              "device": [
+                                {
+                                  "name": "Desktop",
+                                  "orientation": "landscape"
+                                }
+                              ],
+                              "user_agent": "Mozilla"
+                            }
+                          ],
+                          "events": [
+                            {
+                              "event": [
+                                {
+                                  "description": "my description",
+                                  "navigate": [
+                                    {
+                                      "url": "https://www.example.com"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "type": "clickpath"
+                        }
+                      ]
+                    }
         argumentDocs:
             builtin:synthetic.browser.performance-thresholds: )
             dealerting_samples: (Number) Number of most recent non-violating executions that closes the problem
@@ -11468,7 +11691,7 @@ resources:
         name: dynatrace_calculated_service_metric
         title: dynatrace_calculated_service_metric Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: metric
               manifest: |-
                 {
                   "conditions": [
@@ -11494,20 +11717,84 @@ resources:
                       ]
                     }
                   ],
+                  "depends_on": [
+                    "${time_sleep.wait_for_request_attribute}"
+                  ],
                   "enabled": true,
                   "management_zones": [
-                    "AAAA"
+                    "${dynatrace_management_zone_v2.mzone.name}"
                   ],
                   "metric_definition": [
                     {
                       "metric": "REQUEST_ATTRIBUTE",
-                      "request_attribute": "foo"
+                      "request_attribute": "${dynatrace_request_attribute.attribute.name}"
                     }
                   ],
                   "metric_key": "calc:service.#name#",
                   "name": "#name#",
                   "unit": "MILLI_SECOND_PER_MINUTE"
                 }
+              references:
+                management_zones: dynatrace_management_zone_v2.mzone.name
+                metric_definition.request_attribute: dynatrace_request_attribute.attribute.name
+              dependencies:
+                dynatrace_management_zone_v2.mzone: |-
+                    {
+                      "name": "#name#",
+                      "rules": [
+                        {
+                          "rule": [
+                            {
+                              "attribute_rule": [
+                                {
+                                  "attribute_conditions": [
+                                    {
+                                      "condition": [
+                                        {
+                                          "case_sensitive": false,
+                                          "key": "KUBERNETES_CLUSTER_NAME",
+                                          "operator": "EQUALS",
+                                          "string_value": "extensions"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "entity_type": "CLOUD_APPLICATION_NAMESPACE"
+                                }
+                              ],
+                              "enabled": true,
+                              "entity_selector": "",
+                              "type": "ME"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                dynatrace_request_attribute.attribute: |-
+                    {
+                      "aggregation": "FIRST",
+                      "confidential": false,
+                      "data_sources": [
+                        {
+                          "enabled": true,
+                          "parameter_name": "param",
+                          "server_variable_technology": "ASP_NET",
+                          "source": "SERVER_VARIABLE"
+                        }
+                      ],
+                      "data_type": "INTEGER",
+                      "enabled": true,
+                      "name": "#name#",
+                      "normalization": "ORIGINAL",
+                      "skip_personal_data_masking": false
+                    }
+                time_sleep.wait_for_request_attribute: |-
+                    {
+                      "create_duration": "10s",
+                      "depends_on": [
+                        "${dynatrace_request_attribute.attribute}"
+                      ]
+                    }
         argumentDocs:
             BETWEEN_DELIMITER: ': The opening delimiter string to look for.'
             REGEX_EXTRACTION: ': The regular expression.'
@@ -11592,15 +11879,84 @@ resources:
         name: dynatrace_calculated_synthetic_metric
         title: dynatrace_calculated_synthetic_metric Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: metric
               manifest: |-
                 {
                   "enabled": true,
                   "metric": "ResourceCount",
                   "metric_key": "calc:synthetic.browser.#name#",
-                  "monitor_identifier": "SYNTHETIC_TEST-147CFF44DDB25C05",
+                  "monitor_identifier": "${dynatrace_browser_monitor.monitor.id}",
                   "name": "#name#"
                 }
+              references:
+                monitor_identifier: dynatrace_browser_monitor.monitor.id
+              dependencies:
+                dynatrace_browser_monitor.monitor: |-
+                    {
+                      "anomaly_detection": [
+                        {
+                          "loading_time_thresholds": [
+                            {
+                              "enabled": false
+                            }
+                          ],
+                          "outage_handling": [
+                            {
+                              "global_outage": true,
+                              "global_outage_policy": [
+                                {
+                                  "consecutive_runs": 1
+                                }
+                              ],
+                              "local_outage": false,
+                              "retry_on_error": true
+                            }
+                          ]
+                        }
+                      ],
+                      "frequency": 15,
+                      "key_performance_metrics": [
+                        {
+                          "load_action_kpm": "VISUALLY_COMPLETE",
+                          "xhr_action_kpm": "VISUALLY_COMPLETE"
+                        }
+                      ],
+                      "locations": [
+                        "${data.dynatrace_synthetic_location.location.id}"
+                      ],
+                      "name": "#name#",
+                      "script": [
+                        {
+                          "configuration": [
+                            {
+                              "bypass_csp": true,
+                              "device": [
+                                {
+                                  "name": "Desktop",
+                                  "orientation": "landscape"
+                                }
+                              ],
+                              "user_agent": "Mozilla"
+                            }
+                          ],
+                          "events": [
+                            {
+                              "event": [
+                                {
+                                  "description": "my description",
+                                  "navigate": [
+                                    {
+                                      "url": "https://www.example.com"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "type": "clickpath"
+                        }
+                      ]
+                    }
         argumentDocs:
             action_type: (String) Only user actions of the specified type are included in the metric calculation
             description: (String) Descriptor of a calculated synthetic metric.
@@ -11626,10 +11982,10 @@ resources:
         name: dynatrace_calculated_web_metric
         title: dynatrace_calculated_web_metric Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: metric
               manifest: |-
                 {
-                  "app_identifier": "APPLICATION-EA7C4B59F27D43EB",
+                  "app_identifier": "${dynatrace_web_application.application.id}",
                   "dimensions": [
                     {
                       "dimension": [
@@ -11651,12 +12007,100 @@ resources:
                   "name": "#name#",
                   "user_action_filter": [
                     {
-                      "continent": "GEOLOCATION-970B6D0A98F55995",
+                      "continent": "${data.dynatrace_synthetic_location.location.geo_location_id}",
                       "target_view_group_name_match_type": "Equals",
                       "target_view_name_match_type": "Equals"
                     }
                   ]
                 }
+              references:
+                app_identifier: dynatrace_web_application.application.id
+                user_action_filter.continent: data.dynatrace_synthetic_location.location.geo_location_id
+              dependencies:
+                dynatrace_web_application.application: |-
+                    {
+                      "cost_control_user_session_percentage": 100,
+                      "custom_action_apdex_settings": [
+                        {
+                          "frustrating_fallback_threshold": 12000,
+                          "frustrating_threshold": 12000,
+                          "tolerated_fallback_threshold": 3000,
+                          "tolerated_threshold": 3000
+                        }
+                      ],
+                      "load_action_apdex_settings": [
+                        {
+                          "frustrating_fallback_threshold": 12000,
+                          "frustrating_threshold": 12000,
+                          "tolerated_fallback_threshold": 3000,
+                          "tolerated_threshold": 3000
+                        }
+                      ],
+                      "load_action_key_performance_metric": "VISUALLY_COMPLETE",
+                      "monitoring_settings": [
+                        {
+                          "add_cross_origin_anonymous_attribute": true,
+                          "advanced_javascript_tag_settings": [
+                            {
+                              "additional_event_handlers": [
+                                {
+                                  "max_dom_nodes": 5000
+                                }
+                              ],
+                              "max_action_name_length": 100,
+                              "max_errors_to_capture": 10
+                            }
+                          ],
+                          "cache_control_header_optimizations": true,
+                          "content_capture": [
+                            {
+                              "resource_timing_settings": [
+                                {
+                                  "instrumentation_delay": 53,
+                                  "non_w3c_resource_timings": true,
+                                  "w3c_resource_timings": true
+                                }
+                              ],
+                              "timeout_settings": [
+                                {
+                                  "temporary_action_limit": 3,
+                                  "temporary_action_total_timeout": 100,
+                                  "timed_action_support": true
+                                }
+                              ]
+                            }
+                          ],
+                          "injection_mode": "JAVASCRIPT_TAG",
+                          "script_tag_cache_duration_in_hours": 1
+                        }
+                      ],
+                      "name": "#name#",
+                      "real_user_monitoring_enabled": true,
+                      "type": "AUTO_INJECTED",
+                      "user_action_naming_settings": [
+                        {}
+                      ],
+                      "waterfall_settings": [
+                        {
+                          "resource_browser_caching_threshold": 50,
+                          "resources_threshold": 100000,
+                          "slow_cnd_resources_threshold": 200000,
+                          "slow_first_party_resources_threshold": 200000,
+                          "slow_third_party_resources_threshold": 200000,
+                          "speed_index_visually_complete_ratio_threshold": 50,
+                          "uncompressed_resources_threshold": 860
+                        }
+                      ],
+                      "xhr_action_apdex_settings": [
+                        {
+                          "frustrating_fallback_threshold": 12000,
+                          "frustrating_threshold": 12000,
+                          "tolerated_fallback_threshold": 3000,
+                          "tolerated_threshold": 3000
+                        }
+                      ],
+                      "xhr_action_key_performance_metric": "VISUALLY_COMPLETE"
+                    }
         argumentDocs:
             action_duration_from_milliseconds: (Number) Only actions with a duration more than or equal to this value (in milliseconds) are included in the metric calculation.
             action_duration_to_milliseconds: (Number) Only actions with a duration less than or equal to this value (in milliseconds) are included in the metric calculation.
@@ -11868,12 +12312,14 @@ resources:
         name: dynatrace_connectivity_alerts
         title: dynatrace_connectivity_alerts Resource - terraform-provider-dynatrace
         examples:
-            - name: PROCESS_GROUP-1234567890000000
+            - name: alert
               manifest: |-
                 {
                   "connectivity_alerts": false,
-                  "process_group_id": "PROCESS_GROUP-1234567890000000"
+                  "process_group_id": "${var.PROCESS_GROUP_ID}"
                 }
+              references:
+                process_group_id: var.PROCESS_GROUP_ID
         argumentDocs:
             builtin:alerting.connectivity-alerts: )
             connectivity_alerts: (Boolean) TCP connectivity problems
@@ -14164,24 +14610,25 @@ resources:
                 }
         argumentDocs:
             actor: (String) UUID of a service user. Queries will be executed on behalf of the service user.
-            analyzer: '(Block List, Min: 1, Max: 1) Analyzer input (see below for nested schema)'
+            analyzer: '(Block List, Min: 1, Max: 1) Analyzer input to initialize the analyzer (see below for nested schema)'
             analyzer_input_field: '(Block Set, Min: 1) (see below for nested schema)'
             builtin:davis.anomaly-detectors: )
+            delay: (Number) Fixed delay between executions (in seconds)
             description: (String) The description of the anomaly detector
             enabled: (Boolean) This setting is enabled (true) or disabled (false)
-            event_template: '(Block List, Min: 1, Max: 1) Event template (see below for nested schema)'
-            execution_settings: '(Block List, Min: 1, Max: 1) Execution settings (see below for nested schema)'
+            event_template: '(Block List, Min: 1, Max: 1) Defines additional fields on the davis events triggered by the anomaly detector (see below for nested schema)'
+            execution_settings: '(Block List, Min: 1, Max: 1) Defines the configuration parameters that influence how and under what context a query or evaluation is executed. (see below for nested schema)'
             id: (String) The ID of this resource.
             input: '(Block List, Max: 1) Input fields for the specified analyzer (see below for nested schema)'
-            key: (String) no documentation available
+            key: (String) Analyzer input field key
             name: (String) Fully qualified name of the analyzer
             properties: '(Block List, Max: 1) Set of additional key-value properties to be attached to the triggered event. (see below for nested schema)'
             property: '(Block List, Min: 1) (see below for nested schema)'
             query_offset: (Number) Minute offset of sliding evaluation window for metrics with latency
-            source: (String) Source
+            source: (String) The source which created the anomaly detector
             terraform-provider-dynatrace -export dynatrace_davis_anomaly_detectors: downloads all existing Davis anomaly detector configuration
             title: (String) The title of the anomaly detector
-            value: (String) no documentation available
+            value: (String) Analyzer input field value
         importStatements: []
     dynatrace_davis_copilot:
         subCategory: Service Settings
@@ -14209,10 +14656,11 @@ resources:
             blocklist_entries: '(Block List, Max: 1) You can exclude specific data buckets and tables from the semantic index. Learn more about configuring data access. (see below for nested schema)'
             blocklist_entries.blocklist_entrie: '(Block List, Min: 1) (see below for nested schema)'
             blocklist_entries.blocklist_entrie.name: (String) no documentation available
-            blocklist_entries.blocklist_entrie.type: '(String) Possible Values: BUCKET, TABLE'
-            enable_copilot: (Boolean) Please note that once enabled, you still need to assign permissions to the relevant user groups.
-            enable_document_suggestion: (Boolean) By enabling document suggestions, Dynatrace AI can find similarities between Problems and existing Notebooks and Dashboards in order to suggest relevant troubleshooting guides. Learn more about document suggestions.
-            enable_tenant_aware_data_mining: (Boolean) You can enrich Dynatrace Generative AI with your environment data. This lets you generate more accurate queries that identify and reference relevant entities, events, spans, logs, and metrics from your environment. Once enabled, Dynatrace AI periodically scans your Grail data to create its own semantic index. Please note, it can take up to 24 hours to reflect changes. Learn more about environment-aware queries.
+            blocklist_entries.blocklist_entrie.type: '(String) Possible values: BUCKET, TABLE'
+            enable_agentic_ai: (Boolean) Please note that once agentic AI is enabled, the Dynatrace Assist interface is allowed to call tools and run Grail queries. You still need to assign permissions to the relevant user groups.
+            enable_copilot: (Boolean) Please note that once generative AI is enabled, you still need to assign permissions to the relevant user groups.
+            enable_document_suggestion: (Boolean) By enabling document suggestions, Dynatrace Intelligence can find similarities between Problems and existing Notebooks and Dashboards in order to suggest relevant troubleshooting guides. Learn more about document suggestions.
+            enable_tenant_aware_data_mining: (Boolean) You can enrich Dynatrace generative and agentic AI with your environment data. This lets you generate more accurate queries that identify and reference relevant entities, events, spans, logs, and metrics from your environment. Once enabled, Dynatrace Intelligence periodically scans your Grail data to create its own semantic index. Please note, it can take up to 24 hours to reflect changes. Learn more about environment-aware queries.
             id: (String) The ID of this resource.
             service:davis.copilot.datamining-blocklist: )
             terraform-provider-dynatrace -export dynatrace_davis_copilot: downloads existing Davis CoPilot configuration
@@ -14358,7 +14806,7 @@ resources:
         name: dynatrace_default_launchpad
         title: dynatrace_default_launchpad Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: launchpad
               manifest: |-
                 {
                   "group_launchpads": [
@@ -14366,8 +14814,8 @@ resources:
                       "group_launchpad": [
                         {
                           "is_enabled": false,
-                          "launchpad_id": "bbfbffa1-3cce-49a9-bc8f-c892c626f034",
-                          "user_group_id": "ed8db894-e13f-43e8-8916-dd30b8e37e92"
+                          "launchpad_id": "00000000-0000-0000-0000-000000000000",
+                          "user_group_id": "00000000-0000-0000-0000-000000000000"
                         }
                       ]
                     }
@@ -14389,12 +14837,14 @@ resources:
         name: dynatrace_devobs_agent_optin
         title: dynatrace_devobs_agent_optin Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: optin
               manifest: |-
                 {
                   "enabled": false,
-                  "scope": "PROCESS_GROUP-1234567890000000"
+                  "scope": "${var.PROCESS_GROUP_ID}"
                 }
+              references:
+                scope: var.PROCESS_GROUP_ID
         argumentDocs:
             builtin:devobs.agent.optin: )
             enabled: (Boolean) This setting is enabled (true) or disabled (false)
@@ -14438,11 +14888,11 @@ resources:
         name: dynatrace_devobs_git_onprem
         title: dynatrace_devobs_git_onprem Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: onprem
               manifest: |-
                 {
                   "git_provider": "GithubOnPrem",
-                  "url": "http://www.google.com/test/#name#"
+                  "url": "https://example.com/test/#name#"
                 }
         argumentDocs:
             app:dynatrace.devobs.debugger:git.on.prem: )
@@ -15117,14 +15567,14 @@ resources:
         name: dynatrace_event_driven_ansible_connections
         title: dynatrace_event_driven_ansible_connections Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
                   "event_stream_enabled": true,
                   "name": "#name#",
                   "token": "######",
                   "type": "api-token",
-                  "url": "https://www.google.com"
+                  "url": "https://www.example.com"
                 }
         argumentDocs:
             app:dynatrace.redhat.ansible:eda-webhook.connection: )
@@ -15618,7 +16068,7 @@ resources:
             rule: '(Block List, Min: 1) (see below for nested schema)'
             rules: '(Block List, Min: 1, Max: 1) Specify a list of rules which are evaluated in order. When any rule matches, the entity defined according to that rule will be extracted. Subsequent rules will not be evaluated. (see below for nested schema)'
             source: '(Block Set, Min: 1) (see below for nested schema)'
-            source_type: '(String) Possible Values: BusinessEvents, Entities, Events, Logs, Metrics, Spans, Topology'
+            source_type: '(String) Specify the source type of the filter to identify which data source should be evaluated for ingest. Possible values: Business Events, Entities, Events, Logs, Metrics, Spans, Topology'
             sources: '(Block List, Min: 1, Max: 1) Specify all sources which should be evaluated for this rule. A rule is evaluated if any of the specified source filters match. (see below for nested schema)'
             terraform-provider-dynatrace -export dynatrace_generic_types: downloads all existing custom topology generic types configuration
             value_pattern: (String) A dimension value pattern which needs to exist in the ingest data to match this filter.
@@ -15707,12 +16157,12 @@ resources:
         name: dynatrace_gitlab_connection
         title: dynatrace_gitlab_connection Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
                   "name": "#name#",
                   "token": "#######",
-                  "url": "https://www.#name#.com"
+                  "url": "https://www.example.com"
                 }
         argumentDocs:
             app:dynatrace.gitlab.connector:connection: )
@@ -16494,13 +16944,15 @@ resources:
         name: dynatrace_host_process_group_monitoring
         title: dynatrace_host_process_group_monitoring Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: monitoring
               manifest: |-
                 {
                   "host_id": "HOST-1234567890000000",
                   "monitoring_state": "MONITORING_ON",
-                  "process_group": "PROCESS_GROUP-1234567890000000"
+                  "process_group": "${var.PROCESS_GROUP_ID}"
                 }
+              references:
+                process_group: var.PROCESS_GROUP_ID
         argumentDocs:
             builtin:host.process-groups.monitoring-state: )
             host_id: (String) The scope of this settings. If the settings should cover the whole environment, just don't specify any scope.
@@ -16515,7 +16967,7 @@ resources:
         name: dynatrace_http_monitor
         title: dynatrace_http_monitor Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: monitor
               manifest: |-
                 {
                   "anomaly_detection": [
@@ -16537,7 +16989,7 @@ resources:
                   ],
                   "frequency": 1,
                   "locations": [
-                    "GEOLOCATION-F3E06A526BE3B4C4"
+                    "${data.dynatrace_synthetic_location.location.id}"
                   ],
                   "name": "#name#",
                   "script": [
@@ -16553,7 +17005,7 @@ resources:
                                   "header": [
                                     {
                                       "name": "Authorization",
-                                      "value": "Bearer {CREDENTIALS_VAULT-93C49382ACCA047B|token}"
+                                      "value": "Bearer {${dynatrace_credentials.credentials_vault.id}|token}"
                                     },
                                     {
                                       "name": "Accept",
@@ -16579,7 +17031,7 @@ resources:
                                   "header": [
                                     {
                                       "name": "Authorization",
-                                      "value": "Bearer {CREDENTIALS_VAULT-93C49382ACCA047B|token}"
+                                      "value": "Bearer {${dynatrace_credentials.credentials_vault.id}|token}"
                                     }
                                   ]
                                 }
@@ -16611,7 +17063,7 @@ resources:
                                   "header": [
                                     {
                                       "name": "Authorization",
-                                      "value": "Bearer {CREDENTIALS_VAULT-93C49382ACCA047B|token}"
+                                      "value": "Bearer {${dynatrace_credentials.credentials_vault.id}|token}"
                                     }
                                   ]
                                 }
@@ -16643,7 +17095,7 @@ resources:
                                   "header": [
                                     {
                                       "name": "Authorization",
-                                      "value": "Bearer {CREDENTIALS_VAULT-93C49382ACCA047B|token}"
+                                      "value": "Bearer {${dynatrace_credentials.credentials_vault.id}|token}"
                                     }
                                   ]
                                 }
@@ -16675,7 +17127,7 @@ resources:
                                   "header": [
                                     {
                                       "name": "Authorization",
-                                      "value": "Bearer {CREDENTIALS_VAULT-93C49382ACCA047B|token}"
+                                      "value": "Bearer {${dynatrace_credentials.credentials_vault.id}|token}"
                                     }
                                   ]
                                 }
@@ -16707,7 +17159,7 @@ resources:
                                   "header": [
                                     {
                                       "name": "Authorization",
-                                      "value": "Bearer {CREDENTIALS_VAULT-CE4EA27BA94C9061|token}"
+                                      "value": "Bearer {${dynatrace_credentials.credentials_vault.id}|token}"
                                     },
                                     {
                                       "name": "Accept",
@@ -16721,7 +17173,7 @@ resources:
                           "description": "ServiceComms/CurrentStatus",
                           "method": "GET",
                           "post_processing": "var healthyStates = [\n    \"PostIncidentReviewPublished\",\n    \"ServiceRestored\",\n    \"ServiceOperational\",\n    \"FalsePositive\"\n];\n/* Work load status per https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-service-communications-api-reference#status-definitions\nInvestigating\nServiceDegradation\nServiceInterruption\nRestoringService\nExtendedRecovery\nInvestigationSuspended\nServiceRestored\nFalsePositive\nPostIncidentReportPublished\nServiceOperational\n*/\n        \njson = JSON.parse(response.getResponseBody());\n        \nvar payload = \"office365.service.status.queried 1\";\njson.value.forEach(element =\u003e {\n    payload = payload + \"\\noffice365.service.status,workload=\" + element.Workload + \",status=\" + element.Status + \",healthy=\" + (healthyStates.indexOf(element.Status) \u003e= 0) + \" 1\";\n});\napi.setValue(\"service_status\", payload);\n",
-                          "url": "https://manage.office.com/api/v1.0/{CREDENTIALS_VAULT-1A8E917381883F54|token}/ServiceComms/CurrentStatus",
+                          "url": "https://manage.office.com/api/v1.0/{${dynatrace_credentials.credentials_vault.id}|token}/ServiceComms/CurrentStatus",
                           "validation": [
                             {
                               "rule": [
@@ -16748,7 +17200,7 @@ resources:
                                     },
                                     {
                                       "name": "Authorization",
-                                      "value": "Api-Token {CREDENTIALS_VAULT-55F1E51535993619|token}"
+                                      "value": "Api-Token {${dynatrace_credentials.credentials_vault.id}|token}"
                                     }
                                   ]
                                 }
@@ -16773,6 +17225,25 @@ resources:
                     }
                   ]
                 }
+              references:
+                locations: data.dynatrace_synthetic_location.location.id
+              dependencies:
+                dynatrace_credentials.credentials_vault: |-
+                    {
+                      "description": "my credentials vault",
+                      "name": "#name#",
+                      "scopes": [
+                        "SYNTHETIC"
+                      ],
+                      "token": "my-token"
+                    }
+                time_sleep.wait_to_be_consistent: |-
+                    {
+                      "create_duration": "10s",
+                      "depends_on": [
+                        "${dynatrace_http_monitor.monitor}"
+                      ]
+                    }
         argumentDocs:
             accept_any_certificate: (Boolean) If set to false, then the monitor fails with invalid SSL certificates.
             affected_locations: (Number) The number of affected locations to trigger an alert
@@ -16932,7 +17403,7 @@ resources:
         name: dynatrace_http_monitor_script
         title: dynatrace_http_monitor_script Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: script
               manifest: |-
                 {
                   "http_id": "${dynatrace_http_monitor.monitor.id}",
@@ -16947,7 +17418,7 @@ resources:
                           ],
                           "description": "request1",
                           "method": "GET",
-                          "url": "http://httpstat.us/200"
+                          "url": "https://example.com"
                         },
                         {
                           "configuration": [
@@ -16957,12 +17428,14 @@ resources:
                           ],
                           "description": "request2",
                           "method": "GET",
-                          "url": "http://httpstat.us/400"
+                          "url": "https://example.com"
                         }
                       ]
                     }
                   ]
                 }
+              references:
+                http_id: dynatrace_http_monitor.monitor.id
               dependencies:
                 dynatrace_http_monitor.monitor: |-
                     {
@@ -16985,7 +17458,7 @@ resources:
                       ],
                       "frequency": 1,
                       "locations": [
-                        "GEOLOCATION-F3E06A526BE3B4C4"
+                        "${data.dynatrace_synthetic_location.location.id}"
                       ],
                       "name": "#name#",
                       "no_script": true
@@ -17771,12 +18244,12 @@ resources:
         name: dynatrace_jenkins_connection
         title: dynatrace_jenkins_connection Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
                   "name": "#name#",
                   "password": "#######",
-                  "url": "https://www.#name#.com",
+                  "url": "https://www.example.com",
                   "username": "#name#"
                 }
         argumentDocs:
@@ -17842,10 +18315,10 @@ resources:
         name: dynatrace_json_dashboard
         title: dynatrace_json_dashboard Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: name
               manifest: |-
                 {
-                  "contents": "${jsonencode(\n    {\n      \"dashboardMetadata\" : {\n        \"name\" : \"Azure Cognitive Services\",\n        \"shared\" : true,\n        \"owner\" : \"Dynatrace\",\n        \"tags\" : [\n          \"Azure\"\n        ],\n        \"preset\" : true\n      },\n      \"tiles\" : [\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 342,\n            \"left\" : 38,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Successful calls by service instance\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.successfulcalls\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"0\",\n                      \"name\" : \"dt.entity.custom_device\",\n                      \"entityDimension\" : true\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 342,\n            \"left\" : 722,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Latency by service instance\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.latency\",\n                  \"aggregation\" : \"AVG\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"0\",\n                      \"name\" : \"dt.entity.custom_device\",\n                      \"values\" : [],\n                      \"entityDimension\" : true\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 38,\n            \"left\" : 380,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Total errors\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TIMESERIES\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.totalerrors\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"BAR\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"0\",\n                      \"name\" : \"dt.entity.custom_device\",\n                      \"values\" : [],\n                      \"entityDimension\" : true\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 38,\n            \"left\" : 38,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Total calls\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TIMESERIES\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.blockedcalls\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"BAR\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [],\n                  \"aggregationRate\" : \"TOTAL\"\n                },\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.successfulcalls\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"BAR\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ],\n              \"resultMetadata\" : {\n                \"nullext:cloud.azure.microsoft_cognitiveservices.accounts.blockedcalls|SUM|TOTAL|BAR|IOT\" : {\n                  \"lastModified\" : 1595493591071,\n                  \"customColor\" : \"#FF0000\"\n                },\n                \"nullext:cloud.azure.microsoft_cognitiveservices.accounts.totalerrors|SUM|TOTAL|LINE|IOT\" : {\n                  \"lastModified\" : 1595343403084,\n                  \"customColor\" : \"#4fd5e0\"\n                },\n                \"nullext:cloud.azure.microsoft_cognitiveservices.accounts.successfulcalls|SUM|TOTAL|BAR|IOT\" : {\n                  \"lastModified\" : 1595493603433,\n                  \"customColor\" : \"#4fd5e0\"\n                }\n              }\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 38,\n            \"left\" : 722,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Client \u0026 server errors by operation\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.clienterrors\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"BAR\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"2\",\n                      \"name\" : \"Operation name\",\n                      \"values\" : []\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 646,\n            \"left\" : 38,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Successful calls by operation\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.successfulcalls\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"2\",\n                      \"name\" : \"Operation name\",\n                      \"values\" : []\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 646,\n            \"left\" : 380,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Blocked calls by operation\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.blockedcalls\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"2\",\n                      \"name\" : \"Operation name\",\n                      \"values\" : []\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 646,\n            \"left\" : 722,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Latency by operation\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.latency\",\n                  \"aggregation\" : \"AVG\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"2\",\n                      \"name\" : \"Operation name\",\n                      \"values\" : []\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 38,\n            \"left\" : 1064,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Data IN/OUT\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TIMESERIES\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.datain\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"BAR\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [],\n                  \"aggregationRate\" : \"TOTAL\"\n                },\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.dataout\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"BAR\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ],\n              \"resultMetadata\" : {\n                \"nullext:cloud.azure.microsoft_cognitiveservices.accounts.dataout|SUM|TOTAL|BAR|IOT\" : {\n                  \"lastModified\" : 1595495569439,\n                  \"customColor\" : \"#008cdb\"\n                },\n                \"nullext:cloud.azure.microsoft_cognitiveservices.accounts.datain|SUM|TOTAL|BAR|IOT\" : {\n                  \"lastModified\" : 1595495567476,\n                  \"customColor\" : \"#aeebf0\"\n                },\n                \"nullext:cloud.azure.microsoft_cognitiveservices.accounts.datain|SUM|TOTAL|BAR|IOT|IOT\" : {\n                  \"lastModified\" : 1595494661543,\n                  \"customColor\" : \"#008cdb\"\n                }\n              }\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 342,\n            \"left\" : 1064,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Data IN by operation\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.datain\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"2\",\n                      \"name\" : \"Operation name\",\n                      \"values\" : []\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ],\n              \"resultMetadata\" : {\n                \"nullext:cloud.azure.microsoft_cognitiveservices.accounts.dataout|SUM|TOTAL|LINE|IOT\" : {\n                  \"lastModified\" : 1595344576968,\n                  \"customColor\" : \"#ef651f\"\n                }\n              }\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 646,\n            \"left\" : 1064,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Data OUT by operation\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.dataout\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"2\",\n                      \"name\" : \"Operation name\",\n                      \"values\" : []\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ],\n              \"resultMetadata\" : {\n                \"nullÂ¦Operation nameÂ»ReadÂ»falseext:cloud.azure.microsoft_cognitiveservices.accounts.dataout|SUM|TOTAL|LINE|IOT\" : {\n                  \"lastModified\" : 1595344576968,\n                  \"customColor\" : \"#ef651f\"\n                }\n              }\n            }\n          }\n        },\n        {\n          \"name\" : \"Custom chart\",\n          \"tileType\" : \"CUSTOM_CHARTING\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 342,\n            \"left\" : 380,\n            \"width\" : 342,\n            \"height\" : 304\n          },\n          \"filterConfig\" : {\n            \"type\" : \"MIXED\",\n            \"customName\" : \"Blocked calls by service instance\",\n            \"defaultName\" : \"Custom chart\",\n            \"chartConfig\" : {\n              \"legendShown\" : true,\n              \"type\" : \"TOP_LIST\",\n              \"series\" : [\n                {\n                  \"metric\" : \"ext:cloud.azure.microsoft_cognitiveservices.accounts.blockedcalls\",\n                  \"aggregation\" : \"SUM\",\n                  \"type\" : \"LINE\",\n                  \"entityType\" : \"IOT\",\n                  \"dimensions\" : [\n                    {\n                      \"id\" : \"0\",\n                      \"name\" : \"dt.entity.custom_device\",\n                      \"values\" : [],\n                      \"entityDimension\" : true\n                    }\n                  ],\n                  \"sortColumn\" : true,\n                  \"aggregationRate\" : \"TOTAL\"\n                }\n              ]\n            }\n          }\n        },\n        {\n          \"name\" : \"Performance \",\n          \"tileType\" : \"HEADER\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 0,\n            \"left\" : 38,\n            \"width\" : 1026,\n            \"height\" : 38\n          }\n        },\n        {\n          \"name\" : \"Data volume\",\n          \"tileType\" : \"HEADER\",\n          \"configured\" : true,\n          \"bounds\" : {\n            \"top\" : 0,\n            \"left\" : 1064,\n            \"width\" : 342,\n            \"height\" : 38\n          }\n        }\n      ]\n  })}"
+                  "contents": "${jsonencode(\n    {\n      \"dashboardMetadata\": {\n        \"name\": \"Performance overview\",\n        \"shared\": true,\n        \"owner\": \"Dynatrace\",\n        \"tags\": [\n          \"performance\"\n        ],\n        \"preset\": true,\n        \"hasConsistentColors\": false\n      },\n      \"tiles\": [\n        {\n          \"name\": \"Performance\",\n          \"tileType\": \"HEADER\",\n          \"configured\": true,\n          \"bounds\": {\n            \"top\": 0,\n            \"left\": 38,\n            \"width\": 1026,\n            \"height\": 38\n          },\n          \"tileFilter\": {},\n          \"isAutoRefreshDisabled\": true\n        },\n        {\n          \"name\": \"Failure rate by service\",\n          \"tileType\": \"DATA_EXPLORER\",\n          \"configured\": true,\n          \"bounds\": {\n            \"top\": 342,\n            \"left\": 38,\n            \"width\": 342,\n            \"height\": 304\n          },\n          \"tileFilter\": {},\n          \"isAutoRefreshDisabled\": true,\n          \"customName\": \"Successful calls by service instance\",\n          \"queries\": [\n            {\n              \"id\": \"A\",\n              \"metric\": \"builtin:service.errors.total.rate\",\n              \"spaceAggregation\": \"AUTO\",\n              \"timeAggregation\": \"DEFAULT\",\n              \"splitBy\": [\n                \"dt.entity.service\"\n              ],\n              \"sortBy\": \"DESC\",\n              \"sortByDimension\": \"\",\n              \"filterBy\": {\n                \"nestedFilters\": [],\n                \"criteria\": []\n              },\n              \"limit\": 20,\n              \"rate\": \"NONE\",\n              \"enabled\": true\n            }\n          ],\n          \"visualConfig\": {\n            \"type\": \"TOP_LIST\",\n            \"global\": {\n              \"hideLegend\": false\n            },\n            \"rules\": [\n              {\n                \"matcher\": \"A:\",\n                \"properties\": {\n                  \"color\": \"DEFAULT\"\n                },\n                \"seriesOverrides\": []\n              }\n            ],\n            \"axes\": {\n              \"xAxis\": {\n                \"visible\": true\n              },\n              \"yAxes\": []\n            },\n            \"heatmapSettings\": {\n              \"yAxis\": \"VALUE\"\n            },\n            \"singleValueSettings\": {\n              \"showSparkLine\": true\n            },\n            \"thresholds\": [\n              {\n                \"axisTarget\": \"LEFT\",\n                \"rules\": [\n                  {\n                    \"color\": \"#7dc540\"\n                  },\n                  {\n                    \"color\": \"#f5d30f\"\n                  },\n                  {\n                    \"color\": \"#dc172a\"\n                  }\n                ],\n                \"visible\": true\n              }\n            ],\n            \"tableSettings\": {\n              \"hiddenColumns\": []\n            },\n            \"graphChartSettings\": {\n              \"connectNulls\": false\n            },\n            \"honeycombSettings\": {\n              \"showHive\": true,\n              \"showLegend\": true,\n              \"showLabels\": false\n            }\n          },\n          \"queriesSettings\": {\n            \"resolution\": \"\"\n          },\n          \"metricExpressions\": [\n            \"resolution=Inf\u0026(builtin:service.errors.total.rate:splitBy(\\\"dt.entity.service\\\"):sort(value(auto,descending)):limit(20)):limit(100):names\"\n          ]\n        },\n        {\n          \"name\": \"Total calls\",\n          \"tileType\": \"DATA_EXPLORER\",\n          \"configured\": true,\n          \"bounds\": {\n            \"top\": 38,\n            \"left\": 38,\n            \"width\": 342,\n            \"height\": 304\n          },\n          \"tileFilter\": {},\n          \"isAutoRefreshDisabled\": true,\n          \"customName\": \"Total calls\",\n          \"queries\": [\n            {\n              \"id\": \"A\",\n              \"metric\": \"builtin:service.errors.total.successCount\",\n              \"spaceAggregation\": \"SUM\",\n              \"timeAggregation\": \"DEFAULT\",\n              \"splitBy\": [\n                \"dt.entity.service\"\n              ],\n              \"sortBy\": \"DESC\",\n              \"sortByDimension\": \"\",\n              \"filterBy\": {\n                \"nestedFilters\": [],\n                \"criteria\": []\n              },\n              \"limit\": 20,\n              \"rate\": \"NONE\",\n              \"enabled\": true\n            },\n            {\n              \"id\": \"B\",\n              \"metric\": \"builtin:service.errors.fourxx.successCount\",\n              \"spaceAggregation\": \"SUM\",\n              \"timeAggregation\": \"DEFAULT\",\n              \"splitBy\": [\n                \"dt.entity.service\"\n              ],\n              \"sortBy\": \"DESC\",\n              \"sortByDimension\": \"\",\n              \"filterBy\": {\n                \"nestedFilters\": [],\n                \"criteria\": []\n              },\n              \"limit\": 20,\n              \"rate\": \"NONE\",\n              \"enabled\": true\n            },\n            {\n              \"id\": \"C\",\n              \"metric\": \"builtin:service.errors.fivexx.successCount\",\n              \"spaceAggregation\": \"SUM\",\n              \"timeAggregation\": \"DEFAULT\",\n              \"splitBy\": [\n                \"dt.entity.service\"\n              ],\n              \"sortBy\": \"DESC\",\n              \"sortByDimension\": \"\",\n              \"filterBy\": {\n                \"nestedFilters\": [],\n                \"criteria\": []\n              },\n              \"limit\": 20,\n              \"rate\": \"NONE\",\n              \"enabled\": true\n            }\n          ],\n          \"visualConfig\": {\n            \"type\": \"STACKED_AREA\",\n            \"global\": {\n              \"hideLegend\": false\n            },\n            \"rules\": [\n              {\n                \"matcher\": \"A:\",\n                \"properties\": {\n                  \"color\": \"DEFAULT\"\n                },\n                \"seriesOverrides\": []\n              },\n              {\n                \"matcher\": \"B:\",\n                \"properties\": {\n                  \"color\": \"DEFAULT\"\n                },\n                \"seriesOverrides\": []\n              },\n              {\n                \"matcher\": \"C:\",\n                \"properties\": {\n                  \"color\": \"DEFAULT\"\n                },\n                \"seriesOverrides\": []\n              }\n            ],\n            \"axes\": {\n              \"xAxis\": {\n                \"displayName\": \"\",\n                \"visible\": true\n              },\n              \"yAxes\": [\n                {\n                  \"displayName\": \"\",\n                  \"visible\": true,\n                  \"min\": \"AUTO\",\n                  \"max\": \"AUTO\",\n                  \"position\": \"LEFT\",\n                  \"queryIds\": [\n                    \"A\",\n                    \"B\",\n                    \"C\"\n                  ],\n                  \"defaultAxis\": true\n                }\n              ]\n            },\n            \"heatmapSettings\": {\n              \"yAxis\": \"VALUE\"\n            },\n            \"singleValueSettings\": {\n              \"showSparkLine\": true\n            },\n            \"thresholds\": [\n              {\n                \"axisTarget\": \"LEFT\",\n                \"rules\": [\n                  {\n                    \"color\": \"#7dc540\"\n                  },\n                  {\n                    \"color\": \"#f5d30f\"\n                  },\n                  {\n                    \"color\": \"#dc172a\"\n                  }\n                ],\n                \"visible\": true\n              }\n            ],\n            \"tableSettings\": {\n              \"hiddenColumns\": []\n            },\n            \"graphChartSettings\": {\n              \"connectNulls\": false\n            },\n            \"honeycombSettings\": {\n              \"showHive\": true,\n              \"showLegend\": true,\n              \"showLabels\": false\n            }\n          },\n          \"queriesSettings\": {\n            \"resolution\": \"\"\n          },\n          \"metricExpressions\": [\n            \"resolution=null\u0026(builtin:service.errors.total.successCount:splitBy(\\\"dt.entity.service\\\"):sum:sort(value(sum,descending)):limit(20)):limit(100):names,(builtin:service.errors.fourxx.successCount:splitBy(\\\"dt.entity.service\\\"):sum:sort(value(sum,descending)):limit(20)):limit(100):names,(builtin:service.errors.fivexx.successCount:splitBy(\\\"dt.entity.service\\\"):sum:sort(value(sum,descending)):limit(20)):limit(100):names\"\n          ]\n        },\n        {\n          \"name\": \"Total errors\",\n          \"tileType\": \"DATA_EXPLORER\",\n          \"configured\": true,\n          \"bounds\": {\n            \"top\": 38,\n            \"left\": 380,\n            \"width\": 342,\n            \"height\": 304\n          },\n          \"tileFilter\": {},\n          \"isAutoRefreshDisabled\": true,\n          \"customName\": \"Total errors\",\n          \"queries\": [\n            {\n              \"id\": \"A\",\n              \"metric\": \"builtin:service.errors.total.count\",\n              \"spaceAggregation\": \"SUM\",\n              \"timeAggregation\": \"DEFAULT\",\n              \"splitBy\": [],\n              \"sortBy\": \"DESC\",\n              \"sortByDimension\": \"\",\n              \"filterBy\": {\n                \"nestedFilters\": [],\n                \"criteria\": []\n              },\n              \"limit\": 20,\n              \"rate\": \"NONE\",\n              \"enabled\": true\n            }\n          ],\n          \"visualConfig\": {\n            \"type\": \"SINGLE_VALUE\",\n            \"global\": {\n              \"hideLegend\": false\n            },\n            \"rules\": [\n              {\n                \"matcher\": \"A:\",\n                \"properties\": {\n                  \"color\": \"DEFAULT\"\n                },\n                \"seriesOverrides\": []\n              }\n            ],\n            \"axes\": {\n              \"xAxis\": {\n                \"visible\": true\n              },\n              \"yAxes\": []\n            },\n            \"heatmapSettings\": {\n              \"yAxis\": \"VALUE\"\n            },\n            \"singleValueSettings\": {\n              \"showTrend\": false,\n              \"showSparkLine\": true,\n              \"linkTileColorToThreshold\": false\n            },\n            \"thresholds\": [\n              {\n                \"axisTarget\": \"LEFT\",\n                \"rules\": [\n                  {\n                    \"color\": \"#7dc540\"\n                  },\n                  {\n                    \"color\": \"#f5d30f\"\n                  },\n                  {\n                    \"color\": \"#dc172a\"\n                  }\n                ],\n                \"visible\": true\n              }\n            ],\n            \"tableSettings\": {\n              \"hiddenColumns\": []\n            },\n            \"graphChartSettings\": {\n              \"connectNulls\": false\n            },\n            \"honeycombSettings\": {\n              \"showHive\": true,\n              \"showLegend\": true,\n              \"showLabels\": false\n            }\n          },\n          \"queriesSettings\": {\n            \"resolution\": \"\"\n          },\n          \"metricExpressions\": [\n            \"resolution=Inf\u0026(builtin:service.errors.total.count:splitBy():sum:sort(value(sum,descending)):limit(20)):limit(100):names\",\n            \"resolution=null\u0026(builtin:service.errors.total.count:splitBy():sum:sort(value(sum,descending)):limit(20))\"\n          ]\n        },\n        {\n          \"name\": \"Client side errors\",\n          \"tileType\": \"DATA_EXPLORER\",\n          \"configured\": true,\n          \"bounds\": {\n            \"top\": 38,\n            \"left\": 722,\n            \"width\": 342,\n            \"height\": 304\n          },\n          \"tileFilter\": {},\n          \"isAutoRefreshDisabled\": true,\n          \"customName\": \"Client \u0026 server errors by operation\",\n          \"queries\": [\n            {\n              \"id\": \"A\",\n              \"metric\": \"builtin:service.errors.client.count\",\n              \"spaceAggregation\": \"SUM\",\n              \"timeAggregation\": \"DEFAULT\",\n              \"splitBy\": [],\n              \"sortBy\": \"DESC\",\n              \"sortByDimension\": \"\",\n              \"filterBy\": {\n                \"nestedFilters\": [],\n                \"criteria\": []\n              },\n              \"limit\": 20,\n              \"rate\": \"NONE\",\n              \"enabled\": true\n            }\n          ],\n          \"visualConfig\": {\n            \"type\": \"SINGLE_VALUE\",\n            \"global\": {\n              \"hideLegend\": false\n            },\n            \"rules\": [\n              {\n                \"matcher\": \"A:\",\n                \"properties\": {\n                  \"color\": \"DEFAULT\"\n                },\n                \"seriesOverrides\": []\n              }\n            ],\n            \"axes\": {\n              \"xAxis\": {\n                \"visible\": true\n              },\n              \"yAxes\": []\n            },\n            \"heatmapSettings\": {\n              \"yAxis\": \"VALUE\"\n            },\n            \"singleValueSettings\": {\n              \"showSparkLine\": true\n            },\n            \"thresholds\": [\n              {\n                \"axisTarget\": \"LEFT\",\n                \"rules\": [\n                  {\n                    \"color\": \"#7dc540\"\n                  },\n                  {\n                    \"color\": \"#f5d30f\"\n                  },\n                  {\n                    \"color\": \"#dc172a\"\n                  }\n                ],\n                \"visible\": true\n              }\n            ],\n            \"tableSettings\": {\n              \"hiddenColumns\": []\n            },\n            \"graphChartSettings\": {\n              \"connectNulls\": false\n            },\n            \"honeycombSettings\": {\n              \"showHive\": true,\n              \"showLegend\": true,\n              \"showLabels\": false\n            }\n          },\n          \"queriesSettings\": {\n            \"resolution\": \"\"\n          },\n          \"metricExpressions\": [\n            \"resolution=Inf\u0026(builtin:service.errors.client.count:splitBy():sum:sort(value(sum,descending)):limit(20)):limit(100):names\",\n            \"resolution=null\u0026(builtin:service.errors.client.count:splitBy():sum:sort(value(sum,descending)):limit(20))\"\n          ]\n        }\n      ]\n    }\n  )}"
                 }
         argumentDocs:
             contents: (String) Contains the JSON Code of the Dashboard
@@ -18925,11 +19398,14 @@ resources:
         name: dynatrace_log_agent_feature_flags
         title: dynatrace_log_agent_feature_flags Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: flags
               manifest: |-
                 {
+                  "journald_log_detector": true,
                   "new_container_log_detector": true,
-                  "scope": "HOST-1234567890000000"
+                  "plain_iisconfiguration_detector": true,
+                  "scope": "HOST-1234567890000000",
+                  "user_and_event_data": true
                 }
         argumentDocs:
             builtin:logmonitoring.log-agent-feature-flags: )
@@ -18940,6 +19416,7 @@ resources:
             new_container_log_detector: |-
                 (Boolean) Enable OneAgent to collect all container logs in Kubernetes environments.
                 This setting enables:
+            plain_iisconfiguration_detector: (Boolean) Enabling OneAgent to unambiguously assign logs to the appropriate IIS application pools
             scope: (String) The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment.
             terraform-provider-dynatrace -export dynatrace_log_agent_feature_flags: downloads all existing log agent feature flags
             user_and_event_data: (Boolean) Enable OneAgent to collect data from Event Logs in the User Data and Event Data sections.
@@ -19330,7 +19807,7 @@ resources:
                   "scope": "environment"
                 }
         argumentDocs:
-            attribute: '(String) Possible Values: Container_name, Dt_entity_container_group, Dt_entity_process_group, Host_tag, K8s_container_name, K8s_deployment_name, K8s_namespace_name, K8s_pod_annotation, K8s_pod_label, K8s_workload_kind, K8s_workload_name, Log_source, Log_source_origin, Process_technology'
+            attribute: '(String) Possible values: container.name, dt.entity.container_group, dt.entity.process_group, host.tag, k8s.container.name, k8s.deployment.name, k8s.namespace.name, k8s.pod.annotation, k8s.pod.label, k8s.workload.kind, k8s.workload.name, log.source, log.source.origin, process.technology'
             builtin:logmonitoring.sensitive-data-masking-settings: )
             enabled: (Boolean) This setting is enabled (true) or disabled (false)
             expression: (String) Maximum one capture group is allowed. If none was given, the whole expression will be treated as a capture group.
@@ -19340,11 +19817,11 @@ resources:
             matcher: '(Block Set, Min: 1) (see below for nested schema)'
             matchers: '(Block List, Max: 1) no documentation available (see below for nested schema)'
             name: (String) Name
-            operator: '(String) Possible Values: MATCHES'
-            replacement: (String) The string to replace the masked expression with. Irrelevant if type is SHA1.
+            operator: '(String) Possible values: MATCHES'
+            replacement: (String) no documentation available
             scope: (String) The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment.
             terraform-provider-dynatrace -export dynatrace_log_sensitive_data_masking: downloads all existing custom log attributes
-            type: '(String) Possible Values: SHA1, STRING'
+            type: '(String) Masking type. Possible values: SHA1, SHA256, STRING'
             values: (Set of String) no documentation available
         importStatements: []
     dynatrace_log_storage:
@@ -20754,7 +21231,7 @@ resources:
         name: dynatrace_mobile_app_anomalies
         title: dynatrace_mobile_app_anomalies Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: anomalies
               manifest: |-
                 {
                   "error_rate_increase": [
@@ -20769,7 +21246,7 @@ resources:
                       ]
                     }
                   ],
-                  "scope": "MOBILE_APPLICATION-1234567890000000",
+                  "scope": "${data.dynatrace_mobile_application.application.id}",
                   "slow_user_actions": [
                     {
                       "detection_mode": "fixed",
@@ -20808,6 +21285,8 @@ resources:
                     }
                   ]
                 }
+              references:
+                scope: data.dynatrace_mobile_application.application.id
         argumentDocs:
             builtin:anomaly-detection.rum-mobile: )
             detection_mode: '(String) Possible Values: Auto, Fixed'
@@ -20841,10 +21320,10 @@ resources:
         name: dynatrace_mobile_app_crash_rate
         title: dynatrace_mobile_app_crash_rate Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: crash_rate
               manifest: |-
                 {
-                  "application_id": "MOBILE_APPLICATION-1234567890000000",
+                  "application_id": "${data.dynatrace_mobile_application.application.id}",
                   "crash_rate_increase": [
                     {
                       "crash_rate_increase_fixed": [
@@ -20858,6 +21337,8 @@ resources:
                     }
                   ]
                 }
+              references:
+                application_id: data.dynatrace_mobile_application.application.id
         argumentDocs:
             absolute_crash_rate: (Number) Absolute threshold
             application_id: (String) The scope of this settings. If the settings should cover the whole environment, just don't specify any scope.
@@ -20942,7 +21423,7 @@ resources:
         name: dynatrace_mobile_app_request_errors
         title: dynatrace_mobile_app_request_errors Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: request_errors
               manifest: |-
                 {
                   "error_rules": [
@@ -20957,8 +21438,10 @@ resources:
                       ]
                     }
                   ],
-                  "scope": "MOBILE_APPLICATION-1234567890000000"
+                  "scope": "${data.dynatrace_mobile_application.application.id}"
                 }
+              references:
+                scope: data.dynatrace_mobile_application.application.id
         argumentDocs:
             builtin:rum.mobile.request-errors: )
             error_codes: (String) Exclude response codes
@@ -21267,14 +21750,14 @@ resources:
         name: dynatrace_ms365_email_connection
         title: dynatrace_ms365_email_connection Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
-                  "client_id": "123e4567-e89b-12d3-a456-426614174000",
+                  "client_id": "00000000-0000-0000-0000-000000000000",
                   "client_secret": "######",
                   "from_address": "random.email@terraform.com",
                   "name": "#name#",
-                  "tenant_id": "123e4567-e89b-12d3-a456-426614174000",
+                  "tenant_id": "00000000-0000-0000-0000-000000000000",
                   "type": "client_secret"
                 }
         argumentDocs:
@@ -21295,12 +21778,12 @@ resources:
         name: dynatrace_msentraid_connection
         title: dynatrace_msentraid_connection Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
-                  "application_id": "123e4567-e89b-12d3-a456-426614174000",
+                  "application_id": "00000000-0000-0000-0000-000000000000",
                   "client_secret": "#######",
-                  "directory_id": "123e4567-e89b-12d3-a456-426614174000",
+                  "directory_id": "00000000-0000-0000-0000-000000000000",
                   "name": "#name#"
                 }
         argumentDocs:
@@ -34416,7 +34899,7 @@ resources:
             additional_attributes_to_dimension_enabled: (Boolean) Add the resource and scope attributes configured below as dimensions (Metrics Classic)
             attribute_key: (String) Attribute key
             builtin:opentelemetry-metrics: )
-            enable_mint_v_2_ingest: (Boolean) Enable advanced OpenTelemetry metric capabilities with Grail, including primary field enrichment, flexible dimensions, enhanced routing, cost allocation, and support for high-cardinality queries. For more details, please see this post.
+            enable_mint_v_2_ingest: (Boolean) Enable advanced OpenTelemetry metric capabilities with Grail, including primary field enrichment, flexible dimensions, enhanced routing, cost allocation, and support for high-cardinality queries. For more details about this and its effect on enrichment with the dt.entity.service dimension, please see this post.
             enabled: (Boolean) This setting is enabled (true) or disabled (false)
             id: (String) The ID of this resource.
             meter_name_to_dimension_enabled: (Boolean) When enabled, the Meter name (also referred to as InstrumentationScope or InstrumentationLibrary in OpenTelemetry SDKs) and version will be added as dimensions (otel.scope.name and otel.scope.version) to ingested OTLP metrics.
@@ -34727,12 +35210,12 @@ resources:
         name: dynatrace_pagerduty_connection
         title: dynatrace_pagerduty_connection Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: connection
               manifest: |-
                 {
                   "name": "#name#",
                   "token": "#######",
-                  "url": "https://www.#name#.com"
+                  "url": "https://www.example.com/"
                 }
         argumentDocs:
             app:dynatrace.pagerduty:connection: )
@@ -34749,14 +35232,16 @@ resources:
         name: dynatrace_pg_alerting
         title: dynatrace_pg_alerting Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: alert
               manifest: |-
                 {
                   "alerting_mode": "ON_INSTANCE_COUNT_VIOLATION",
                   "enabled": true,
                   "minimum_instance_threshold": 5,
-                  "process_group": "PROCESS_GROUP-1234567890000000"
+                  "process_group": "${var.PROCESS_GROUP_ID}"
                 }
+              references:
+                process_group: var.PROCESS_GROUP_ID
         argumentDocs:
             alerting_mode: '(String) Possible Values: ON_INSTANCE_COUNT_VIOLATION, ON_PGI_UNAVAILABILITY'
             builtin:availability.process-group-alerting: )
@@ -34772,7 +35257,7 @@ resources:
         name: dynatrace_pg_anomalies
         title: dynatrace_pg_anomalies Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: anomaly
               manifest: |-
                 {
                   "availability": [
@@ -34781,8 +35266,10 @@ resources:
                       "minimum_threshold": 0
                     }
                   ],
-                  "pg_id": "PROCESS_GROUP-AA665B81183B0D7A"
+                  "pg_id": "${var.PROCESS_GROUP_ID}"
                 }
+              references:
+                pg_id: var.PROCESS_GROUP_ID
         argumentDocs:
             availability: '(Block List, Max: 1) Configuration of the availability monitoring for the process group. (see below for nested schema)'
             id: (String) The ID of this resource.
@@ -35163,12 +35650,14 @@ resources:
         name: dynatrace_process_group_monitoring
         title: dynatrace_process_group_monitoring Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: monitoring
               manifest: |-
                 {
                   "monitoring_state": "MONITORING_ON",
-                  "process_group_id": "PROCESS_GROUP-1234567890000000"
+                  "process_group_id": "${var.PROCESS_GROUP_ID}"
                 }
+              references:
+                process_group_id: var.PROCESS_GROUP_ID
         argumentDocs:
             builtin:process-group.monitoring.state: )
             id: (String) The ID of this resource.
@@ -35182,12 +35671,14 @@ resources:
         name: dynatrace_process_group_rum
         title: dynatrace_process_group_rum Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: rum
               manifest: |-
                 {
                   "enable": false,
-                  "process_group_id": "PROCESS_GROUP-1234567890000000"
+                  "process_group_id": "${var.PROCESS_GROUP_ID}"
                 }
+              references:
+                process_group_id: var.PROCESS_GROUP_ID
         argumentDocs:
             builtin:rum.processgroup: )
             enable: '(Boolean) Allows OneAgent to:'
@@ -37243,13 +37734,13 @@ resources:
         name: dynatrace_servicenow_connection
         title: dynatrace_servicenow_connection Resource - terraform-provider-dynatrace
         examples:
-            - name: '#name#'
+            - name: user_password
               manifest: |-
                 {
                   "name": "#name#",
                   "password": "#######",
                   "type": "basic",
-                  "url": "https://www.#name#.com",
+                  "url": "https://www.example.com",
                   "user": "#name#"
                 }
         argumentDocs:
