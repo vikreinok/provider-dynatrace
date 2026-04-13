@@ -1,0 +1,224 @@
+apiVersion: iam.dynatrace.m.crossplane.io/v1alpha1
+kind: ManagementZoneV2
+metadata:
+  annotations:
+    meta.upbound.io/example-id: iam/v1alpha1/managementzonev2
+  labels:
+    testing.upbound.io/example-name: '#name#'
+  name: '#name#'
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: '#name#'
+    rules:
+    - rule:
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: extensions
+          entityType: CLOUD_APPLICATION_NAMESPACE
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - enumValue: GOOGLE_CLOUD_PLATFORM
+              key: HOST_CLOUD_TYPE
+              operator: EQUALS
+          entityType: HOST
+          hostToPgpropagation: true
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: CUSTOM_DEVICE_NAME
+              operator: CONTAINS
+              stringValue: gcp
+          entityType: CUSTOM_DEVICE
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: linkerd
+          entityType: CLOUD_APPLICATION_NAMESPACE
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - entityId: HOST_GROUP-8A29CED074001723
+              key: HOST_GROUP_ID
+              operator: EQUALS
+          entityType: SERVICE
+          serviceToHostPropagation: true
+          serviceToPgpropagation: true
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: consul
+          entityType: KUBERNETES_CLUSTER
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: gke
+          entityType: CLOUD_APPLICATION_NAMESPACE
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: extensions
+          entityType: KUBERNETES_CLUSTER
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - entityId: HOST_GROUP-8A29CED074001723
+              key: HOST_GROUP_ID
+              operator: EQUALS
+          entityType: HOST
+          hostToPgpropagation: true
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - dimensionRule:
+        - appliesTo: METRIC
+          dimensionConditions:
+          - condition:
+            - conditionType: METRIC_KEY
+              ruleMatcher: BEGINS_WITH
+              value: cloud.gcp.
+        enabled: true
+        entitySelector: ""
+        type: DIMENSION
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: linkerd
+          entityType: CLOUD_APPLICATION
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: WEB_APPLICATION_NAME
+              operator: CONTAINS
+              stringValue: gcp
+          entityType: WEB_APPLICATION
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - enumValue: GOOGLE_CLOUD_PLATFORM
+              key: HOST_CLOUD_TYPE
+              operator: EQUALS
+          entityType: SERVICE
+          serviceToHostPropagation: true
+          serviceToPgpropagation: true
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: extensions
+          entityType: CLOUD_APPLICATION
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: consul
+          entityType: CLOUD_APPLICATION_NAMESPACE
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: consul
+          entityType: CLOUD_APPLICATION
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: gke
+          entityType: CLOUD_APPLICATION
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: false
+              key: KUBERNETES_CLUSTER_NAME
+              operator: EQUALS
+              stringValue: linkerd
+          entityType: KUBERNETES_CLUSTER
+        enabled: true
+        entitySelector: ""
+        type: ME
+      - attributeRule:
+        - attributeConditions:
+          - condition:
+            - caseSensitive: true
+              key: WEB_APPLICATION_NAME
+              operator: CONTAINS
+              stringValue: www.gcp.easytravel.com
+          entityType: WEB_APPLICATION
+        enabled: true
+        entitySelector: ""
+        type: ME

@@ -1,0 +1,893 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.19.0
+  name: managementzonev2s.iam.dynatrace.crossplane.io
+spec:
+  group: iam.dynatrace.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - dynatrace
+    kind: ManagementZoneV2
+    listKind: ManagementZoneV2List
+    plural: managementzonev2s
+    singular: managementzonev2
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .metadata.annotations.crossplane\.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ManagementZoneV2 is the Schema for the ManagementZoneV2s API.
+          The resource
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ManagementZoneV2Spec defines the desired state of ManagementZoneV2
+            properties:
+              deletionPolicy:
+                default: Delete
+                description: |-
+                  DeletionPolicy specifies what will happen to the underlying external
+                  when this managed resource is deleted - either "Delete" or "Orphan" the
+                  external resource.
+                  This field is planned to be deprecated in favor of the ManagementPolicies
+                  field in a future release. Currently, both could be set independently and
+                  non-default values would be honored if the feature flag is enabled.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              forProvider:
+                properties:
+                  description:
+                    description: |-
+                      (String) Description
+                      Description
+                    type: string
+                  legacyId:
+                    description: |-
+                      (String) The ID of this setting when referred to by the Config REST API V1
+                      The ID of this setting when referred to by the Config REST API V1
+                    type: string
+                  name:
+                    description: |-
+                      if there are policies that are referencing this Management zone, they will need to be adapted to the new name!
+                      **Be careful when renaming** - if there are policies that are referencing this Management zone, they will need to be adapted to the new name!
+                    type: string
+                  rules:
+                    description: |-
+                      (Block List, Max: 1) Rules (see below for nested schema)
+                      Rules
+                    items:
+                      properties:
+                        rule:
+                          description: |-
+                            (Block Set, Min: 1) A management zone rule (see below for nested schema)
+                            A management zone rule
+                          items:
+                            properties:
+                              attributeRule:
+                                description: |-
+                                  (Block List, Max: 1) no documentation available (see below for nested schema)
+                                  no documentation available
+                                items:
+                                  properties:
+                                    attributeConditions:
+                                      description: |-
+                                        (Block List, Min: 1, Max: 1) no documentation available (see below for nested schema)
+                                        no documentation available
+                                      items:
+                                        properties:
+                                          condition:
+                                            description: |-
+                                              (Block Set, Min: 1) Attribute conditions (see below for nested schema)
+                                              Attribute conditions
+                                            items:
+                                              properties:
+                                                caseSensitive:
+                                                  description: |-
+                                                    (Boolean) Case sensitive
+                                                    Case sensitive
+                                                  type: boolean
+                                                dynamicKey:
+                                                  description: |-
+                                                    (String) Dynamic key
+                                                    Dynamic key
+                                                  type: string
+                                                dynamicKeySource:
+                                                  description: |-
+                                                    (String) Key source
+                                                    Key source
+                                                  type: string
+                                                entityId:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                enumValue:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                integerValue:
+                                                  description: |-
+                                                    (Number) Value
+                                                    Value
+                                                  type: number
+                                                key:
+                                                  description: |-
+                                                    (String) Possible Values: APPMON_SERVER_NAME, APPMON_SYSTEM_PROFILE_NAME, AWS_ACCOUNT_ID, AWS_ACCOUNT_NAME, AWS_APPLICATION_LOAD_BALANCER_NAME, AWS_APPLICATION_LOAD_BALANCER_TAGS, AWS_AUTO_SCALING_GROUP_NAME, AWS_AUTO_SCALING_GROUP_TAGS, AWS_AVAILABILITY_ZONE_NAME, AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS, AWS_CLASSIC_LOAD_BALANCER_NAME, AWS_CLASSIC_LOAD_BALANCER_TAGS, AWS_NETWORK_LOAD_BALANCER_NAME, AWS_NETWORK_LOAD_BALANCER_TAGS, AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME, AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT, AWS_RELATIONAL_DATABASE_SERVICE_ENGINE, AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS, AWS_RELATIONAL_DATABASE_SERVICE_NAME, AWS_RELATIONAL_DATABASE_SERVICE_PORT, AWS_RELATIONAL_DATABASE_SERVICE_TAGS, AZURE_ENTITY_NAME, AZURE_ENTITY_TAGS, AZURE_MGMT_GROUP_NAME, AZURE_MGMT_GROUP_UUID, AZURE_REGION_NAME, AZURE_SCALE_SET_NAME, AZURE_SUBSCRIPTION_NAME, AZURE_SUBSCRIPTION_UUID, AZURE_TENANT_NAME, AZURE_TENANT_UUID, AZURE_VM_NAME, BROWSER_MONITOR_NAME, BROWSER_MONITOR_TAGS, CLOUD_APPLICATION_LABELS, CLOUD_APPLICATION_NAME, CLOUD_APPLICATION_NAMESPACE_LABELS, CLOUD_APPLICATION_NAMESPACE_NAME, CLOUD_FOUNDRY_FOUNDATION_NAME, CLOUD_FOUNDRY_ORG_NAME, CUSTOM_APPLICATION_NAME, CUSTOM_APPLICATION_PLATFORM, CUSTOM_APPLICATION_TAGS, CUSTOM_APPLICATION_TYPE, CUSTOM_DEVICE_DNS_ADDRESS, CUSTOM_DEVICE_GROUP_NAME, CUSTOM_DEVICE_GROUP_TAGS, CUSTOM_DEVICE_IP_ADDRESS, CUSTOM_DEVICE_METADATA, CUSTOM_DEVICE_NAME, CUSTOM_DEVICE_PORT, CUSTOM_DEVICE_TAGS, CUSTOM_DEVICE_TECHNOLOGY, DATA_CENTER_SERVICE_DECODER_TYPE, DATA_CENTER_SERVICE_IP_ADDRESS, DATA_CENTER_SERVICE_METADATA, DATA_CENTER_SERVICE_NAME, DATA_CENTER_SERVICE_PORT, DATA_CENTER_SERVICE_TAGS, DOCKER_CONTAINER_NAME, DOCKER_FULL_IMAGE_NAME, DOCKER_IMAGE_VERSION, EC2_INSTANCE_AMI_ID, EC2_INSTANCE_AWS_INSTANCE_TYPE, EC2_INSTANCE_AWS_SECURITY_GROUP, EC2_INSTANCE_BEANSTALK_ENV_NAME, EC2_INSTANCE_ID, EC2_INSTANCE_NAME, EC2_INSTANCE_PRIVATE_HOST_NAME, EC2_INSTANCE_PUBLIC_HOST_NAME, EC2_INSTANCE_TAGS, ENTERPRISE_APPLICATION_DECODER_TYPE, ENTERPRISE_APPLICATION_IP_ADDRESS, ENTERPRISE_APPLICATION_METADATA, ENTERPRISE_APPLICATION_NAME, ENTERPRISE_APPLICATION_PORT, ENTERPRISE_APPLICATION_TAGS, ESXI_HOST_CLUSTER_NAME, ESXI_HOST_HARDWARE_MODEL, ESXI_HOST_HARDWARE_VENDOR, ESXI_HOST_NAME, ESXI_HOST_PRODUCT_NAME, ESXI_HOST_PRODUCT_VERSION, ESXI_HOST_TAGS, EXTERNAL_MONITOR_ENGINE_DESCRIPTION, EXTERNAL_MONITOR_ENGINE_NAME, EXTERNAL_MONITOR_ENGINE_TYPE, EXTERNAL_MONITOR_NAME, EXTERNAL_MONITOR_TAGS, GEOLOCATION_SITE_NAME, GOOGLE_CLOUD_PLATFORM_ZONE_NAME, GOOGLE_COMPUTE_INSTANCE_ID, GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE, GOOGLE_COMPUTE_INSTANCE_NAME, GOOGLE_COMPUTE_INSTANCE_PROJECT, GOOGLE_COMPUTE_INSTANCE_PROJECT_ID, GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES, HOST_AIX_LOGICAL_CPU_COUNT, HOST_AIX_SIMULTANEOUS_THREADS, HOST_AIX_VIRTUAL_CPU_COUNT, HOST_ARCHITECTURE, HOST_AWS_NAME_TAG, HOST_AZURE_COMPUTE_MODE, HOST_AZURE_SKU, HOST_AZURE_WEB_APPLICATION_HOST_NAMES, HOST_AZURE_WEB_APPLICATION_SITE_NAMES, HOST_BITNESS, HOST_BOSH_AVAILABILITY_ZONE, HOST_BOSH_DEPLOYMENT_ID, HOST_BOSH_INSTANCE_ID, HOST_BOSH_INSTANCE_NAME, HOST_BOSH_NAME, HOST_BOSH_STEMCELL_VERSION, HOST_CLOUD_TYPE, HOST_CPU_CORES, HOST_CUSTOM_METADATA, HOST_DETECTED_NAME, HOST_GROUP_ID, HOST_GROUP_NAME, HOST_HYPERVISOR_TYPE, HOST_IP_ADDRESS, HOST_KUBERNETES_LABELS, HOST_LOGICAL_CPU_CORES, HOST_NAME, HOST_ONEAGENT_CUSTOM_HOST_NAME, HOST_OS_TYPE, HOST_OS_VERSION, HOST_PAAS_MEMORY_LIMIT, HOST_PAAS_TYPE, HOST_TAGS, HOST_TECHNOLOGY, HTTP_MONITOR_NAME, HTTP_MONITOR_TAGS, KUBERNETES_CLUSTER_NAME, KUBERNETES_NODE_NAME, KUBERNETES_SERVICE_NAME, MOBILE_APPLICATION_NAME, MOBILE_APPLICATION_PLATFORM, MOBILE_APPLICATION_TAGS, NAME_OF_COMPUTE_NODE, OPENSTACK_ACCOUNT_NAME, OPENSTACK_ACCOUNT_PROJECT_NAME, OPENSTACK_AVAILABILITY_ZONE_NAME, OPENSTACK_PROJECT_NAME, OPENSTACK_REGION_NAME, OPENSTACK_VM_INSTANCE_TYPE, OPENSTACK_VM_NAME, OPENSTACK_VM_SECURITY_GROUP, PROCESS_GROUP_AZURE_HOST_NAME, PROCESS_GROUP_AZURE_SITE_NAME, PROCESS_GROUP_CUSTOM_METADATA, PROCESS_GROUP_DETECTED_NAME, PROCESS_GROUP_ID, PROCESS_GROUP_LISTEN_PORT, PROCESS_GROUP_NAME, PROCESS_GROUP_PREDEFINED_METADATA, PROCESS_GROUP_TAGS, PROCESS_GROUP_TECHNOLOGY, PROCESS_GROUP_TECHNOLOGY_EDITION, PROCESS_GROUP_TECHNOLOGY_VERSION, QUEUE_NAME, QUEUE_TECHNOLOGY, QUEUE_VENDOR, SERVICE_AKKA_ACTOR_SYSTEM, SERVICE_CTG_SERVICE_NAME, SERVICE_DATABASE_HOST_NAME, SERVICE_DATABASE_NAME, SERVICE_DATABASE_TOPOLOGY, SERVICE_DATABASE_VENDOR, SERVICE_DETECTED_NAME, SERVICE_ESB_APPLICATION_NAME, SERVICE_IBM_CTG_GATEWAY_URL, SERVICE_MESSAGING_LISTENER_CLASS_NAME, SERVICE_NAME, SERVICE_PORT, SERVICE_PUBLIC_DOMAIN_NAME, SERVICE_REMOTE_ENDPOINT, SERVICE_REMOTE_SERVICE_NAME, SERVICE_TAGS, SERVICE_TECHNOLOGY, SERVICE_TECHNOLOGY_EDITION, SERVICE_TECHNOLOGY_VERSION, SERVICE_TOPOLOGY, SERVICE_TYPE, SERVICE_WEB_APPLICATION_ID, SERVICE_WEB_CONTEXT_ROOT, SERVICE_WEB_SERVER_ENDPOINT, SERVICE_WEB_SERVER_NAME, SERVICE_WEB_SERVICE_NAME, SERVICE_WEB_SERVICE_NAMESPACE, VMWARE_DATACENTER_NAME, VMWARE_VM_NAME, WEB_APPLICATION_NAME, WEB_APPLICATION_NAME_PATTERN, WEB_APPLICATION_TAGS, WEB_APPLICATION_TYPE
+                                                    Possible Values: `APPMON_SERVER_NAME`, `APPMON_SYSTEM_PROFILE_NAME`, `AWS_ACCOUNT_ID`, `AWS_ACCOUNT_NAME`, `AWS_APPLICATION_LOAD_BALANCER_NAME`, `AWS_APPLICATION_LOAD_BALANCER_TAGS`, `AWS_AUTO_SCALING_GROUP_NAME`, `AWS_AUTO_SCALING_GROUP_TAGS`, `AWS_AVAILABILITY_ZONE_NAME`, `AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS`, `AWS_CLASSIC_LOAD_BALANCER_NAME`, `AWS_CLASSIC_LOAD_BALANCER_TAGS`, `AWS_NETWORK_LOAD_BALANCER_NAME`, `AWS_NETWORK_LOAD_BALANCER_TAGS`, `AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME`, `AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT`, `AWS_RELATIONAL_DATABASE_SERVICE_ENGINE`, `AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS`, `AWS_RELATIONAL_DATABASE_SERVICE_NAME`, `AWS_RELATIONAL_DATABASE_SERVICE_PORT`, `AWS_RELATIONAL_DATABASE_SERVICE_TAGS`, `AZURE_ENTITY_NAME`, `AZURE_ENTITY_TAGS`, `AZURE_MGMT_GROUP_NAME`, `AZURE_MGMT_GROUP_UUID`, `AZURE_REGION_NAME`, `AZURE_SCALE_SET_NAME`, `AZURE_SUBSCRIPTION_NAME`, `AZURE_SUBSCRIPTION_UUID`, `AZURE_TENANT_NAME`, `AZURE_TENANT_UUID`, `AZURE_VM_NAME`, `BROWSER_MONITOR_NAME`, `BROWSER_MONITOR_TAGS`, `CLOUD_APPLICATION_LABELS`, `CLOUD_APPLICATION_NAME`, `CLOUD_APPLICATION_NAMESPACE_LABELS`, `CLOUD_APPLICATION_NAMESPACE_NAME`, `CLOUD_FOUNDRY_FOUNDATION_NAME`, `CLOUD_FOUNDRY_ORG_NAME`, `CUSTOM_APPLICATION_NAME`, `CUSTOM_APPLICATION_PLATFORM`, `CUSTOM_APPLICATION_TAGS`, `CUSTOM_APPLICATION_TYPE`, `CUSTOM_DEVICE_DNS_ADDRESS`, `CUSTOM_DEVICE_GROUP_NAME`, `CUSTOM_DEVICE_GROUP_TAGS`, `CUSTOM_DEVICE_IP_ADDRESS`, `CUSTOM_DEVICE_METADATA`, `CUSTOM_DEVICE_NAME`, `CUSTOM_DEVICE_PORT`, `CUSTOM_DEVICE_TAGS`, `CUSTOM_DEVICE_TECHNOLOGY`, `DATA_CENTER_SERVICE_DECODER_TYPE`, `DATA_CENTER_SERVICE_IP_ADDRESS`, `DATA_CENTER_SERVICE_METADATA`, `DATA_CENTER_SERVICE_NAME`, `DATA_CENTER_SERVICE_PORT`, `DATA_CENTER_SERVICE_TAGS`, `DOCKER_CONTAINER_NAME`, `DOCKER_FULL_IMAGE_NAME`, `DOCKER_IMAGE_VERSION`, `EC2_INSTANCE_AMI_ID`, `EC2_INSTANCE_AWS_INSTANCE_TYPE`, `EC2_INSTANCE_AWS_SECURITY_GROUP`, `EC2_INSTANCE_BEANSTALK_ENV_NAME`, `EC2_INSTANCE_ID`, `EC2_INSTANCE_NAME`, `EC2_INSTANCE_PRIVATE_HOST_NAME`, `EC2_INSTANCE_PUBLIC_HOST_NAME`, `EC2_INSTANCE_TAGS`, `ENTERPRISE_APPLICATION_DECODER_TYPE`, `ENTERPRISE_APPLICATION_IP_ADDRESS`, `ENTERPRISE_APPLICATION_METADATA`, `ENTERPRISE_APPLICATION_NAME`, `ENTERPRISE_APPLICATION_PORT`, `ENTERPRISE_APPLICATION_TAGS`, `ESXI_HOST_CLUSTER_NAME`, `ESXI_HOST_HARDWARE_MODEL`, `ESXI_HOST_HARDWARE_VENDOR`, `ESXI_HOST_NAME`, `ESXI_HOST_PRODUCT_NAME`, `ESXI_HOST_PRODUCT_VERSION`, `ESXI_HOST_TAGS`, `EXTERNAL_MONITOR_ENGINE_DESCRIPTION`, `EXTERNAL_MONITOR_ENGINE_NAME`, `EXTERNAL_MONITOR_ENGINE_TYPE`, `EXTERNAL_MONITOR_NAME`, `EXTERNAL_MONITOR_TAGS`, `GEOLOCATION_SITE_NAME`, `GOOGLE_CLOUD_PLATFORM_ZONE_NAME`, `GOOGLE_COMPUTE_INSTANCE_ID`, `GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE`, `GOOGLE_COMPUTE_INSTANCE_NAME`, `GOOGLE_COMPUTE_INSTANCE_PROJECT`, `GOOGLE_COMPUTE_INSTANCE_PROJECT_ID`, `GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES`, `HOST_AIX_LOGICAL_CPU_COUNT`, `HOST_AIX_SIMULTANEOUS_THREADS`, `HOST_AIX_VIRTUAL_CPU_COUNT`, `HOST_ARCHITECTURE`, `HOST_AWS_NAME_TAG`, `HOST_AZURE_COMPUTE_MODE`, `HOST_AZURE_SKU`, `HOST_AZURE_WEB_APPLICATION_HOST_NAMES`, `HOST_AZURE_WEB_APPLICATION_SITE_NAMES`, `HOST_BITNESS`, `HOST_BOSH_AVAILABILITY_ZONE`, `HOST_BOSH_DEPLOYMENT_ID`, `HOST_BOSH_INSTANCE_ID`, `HOST_BOSH_INSTANCE_NAME`, `HOST_BOSH_NAME`, `HOST_BOSH_STEMCELL_VERSION`, `HOST_CLOUD_TYPE`, `HOST_CPU_CORES`, `HOST_CUSTOM_METADATA`, `HOST_DETECTED_NAME`, `HOST_GROUP_ID`, `HOST_GROUP_NAME`, `HOST_HYPERVISOR_TYPE`, `HOST_IP_ADDRESS`, `HOST_KUBERNETES_LABELS`, `HOST_LOGICAL_CPU_CORES`, `HOST_NAME`, `HOST_ONEAGENT_CUSTOM_HOST_NAME`, `HOST_OS_TYPE`, `HOST_OS_VERSION`, `HOST_PAAS_MEMORY_LIMIT`, `HOST_PAAS_TYPE`, `HOST_TAGS`, `HOST_TECHNOLOGY`, `HTTP_MONITOR_NAME`, `HTTP_MONITOR_TAGS`, `KUBERNETES_CLUSTER_NAME`, `KUBERNETES_NODE_NAME`, `KUBERNETES_SERVICE_NAME`, `MOBILE_APPLICATION_NAME`, `MOBILE_APPLICATION_PLATFORM`, `MOBILE_APPLICATION_TAGS`, `NAME_OF_COMPUTE_NODE`, `OPENSTACK_ACCOUNT_NAME`, `OPENSTACK_ACCOUNT_PROJECT_NAME`, `OPENSTACK_AVAILABILITY_ZONE_NAME`, `OPENSTACK_PROJECT_NAME`, `OPENSTACK_REGION_NAME`, `OPENSTACK_VM_INSTANCE_TYPE`, `OPENSTACK_VM_NAME`, `OPENSTACK_VM_SECURITY_GROUP`, `PROCESS_GROUP_AZURE_HOST_NAME`, `PROCESS_GROUP_AZURE_SITE_NAME`, `PROCESS_GROUP_CUSTOM_METADATA`, `PROCESS_GROUP_DETECTED_NAME`, `PROCESS_GROUP_ID`, `PROCESS_GROUP_LISTEN_PORT`, `PROCESS_GROUP_NAME`, `PROCESS_GROUP_PREDEFINED_METADATA`, `PROCESS_GROUP_TAGS`, `PROCESS_GROUP_TECHNOLOGY`, `PROCESS_GROUP_TECHNOLOGY_EDITION`, `PROCESS_GROUP_TECHNOLOGY_VERSION`, `QUEUE_NAME`, `QUEUE_TECHNOLOGY`, `QUEUE_VENDOR`, `SERVICE_AKKA_ACTOR_SYSTEM`, `SERVICE_CTG_SERVICE_NAME`, `SERVICE_DATABASE_HOST_NAME`, `SERVICE_DATABASE_NAME`, `SERVICE_DATABASE_TOPOLOGY`, `SERVICE_DATABASE_VENDOR`, `SERVICE_DETECTED_NAME`, `SERVICE_ESB_APPLICATION_NAME`, `SERVICE_IBM_CTG_GATEWAY_URL`, `SERVICE_MESSAGING_LISTENER_CLASS_NAME`, `SERVICE_NAME`, `SERVICE_PORT`, `SERVICE_PUBLIC_DOMAIN_NAME`, `SERVICE_REMOTE_ENDPOINT`, `SERVICE_REMOTE_SERVICE_NAME`, `SERVICE_TAGS`, `SERVICE_TECHNOLOGY`, `SERVICE_TECHNOLOGY_EDITION`, `SERVICE_TECHNOLOGY_VERSION`, `SERVICE_TOPOLOGY`, `SERVICE_TYPE`, `SERVICE_WEB_APPLICATION_ID`, `SERVICE_WEB_CONTEXT_ROOT`, `SERVICE_WEB_SERVER_ENDPOINT`, `SERVICE_WEB_SERVER_NAME`, `SERVICE_WEB_SERVICE_NAME`, `SERVICE_WEB_SERVICE_NAMESPACE`, `VMWARE_DATACENTER_NAME`, `VMWARE_VM_NAME`, `WEB_APPLICATION_NAME`, `WEB_APPLICATION_NAME_PATTERN`, `WEB_APPLICATION_TAGS`, `WEB_APPLICATION_TYPE`
+                                                  type: string
+                                                operator:
+                                                  description: |-
+                                                    (String) Possible Values: BEGINS_WITH, CONTAINS, ENDS_WITH, EQUALS, EXISTS, GREATER_THAN, GREATER_THAN_OR_EQUAL, IS_IP_IN_RANGE, LOWER_THAN, LOWER_THAN_OR_EQUAL, NOT_BEGINS_WITH, NOT_CONTAINS, NOT_ENDS_WITH, NOT_EQUALS, NOT_EXISTS, NOT_GREATER_THAN, NOT_GREATER_THAN_OR_EQUAL, NOT_IS_IP_IN_RANGE, NOT_LOWER_THAN, NOT_LOWER_THAN_OR_EQUAL, NOT_REGEX_MATCHES, NOT_TAG_KEY_EQUALS, REGEX_MATCHES, TAG_KEY_EQUALS
+                                                    Possible Values: `BEGINS_WITH`, `CONTAINS`, `ENDS_WITH`, `EQUALS`, `EXISTS`, `GREATER_THAN`, `GREATER_THAN_OR_EQUAL`, `IS_IP_IN_RANGE`, `LOWER_THAN`, `LOWER_THAN_OR_EQUAL`, `NOT_BEGINS_WITH`, `NOT_CONTAINS`, `NOT_ENDS_WITH`, `NOT_EQUALS`, `NOT_EXISTS`, `NOT_GREATER_THAN`, `NOT_GREATER_THAN_OR_EQUAL`, `NOT_IS_IP_IN_RANGE`, `NOT_LOWER_THAN`, `NOT_LOWER_THAN_OR_EQUAL`, `NOT_REGEX_MATCHES`, `NOT_TAG_KEY_EQUALS`, `REGEX_MATCHES`, `TAG_KEY_EQUALS`
+                                                  type: string
+                                                stringValue:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                tag:
+                                                  description: |-
+                                                    (String) Format: [CONTEXT]tagKey:tagValue
+                                                    Format: `[CONTEXT]tagKey:tagValue`
+                                                  type: string
+                                              type: object
+                                            type: array
+                                        type: object
+                                      type: array
+                                    azureToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to process groups connected to matching Azure entities
+                                        Apply to process groups connected to matching Azure entities
+                                      type: boolean
+                                    azureToServicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to services provided by matching Azure entities
+                                        Apply to services provided by matching Azure entities
+                                      type: boolean
+                                    customDeviceGroupToCustomDevicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to custom devices in a custom device group
+                                        Apply to custom devices in a custom device group
+                                      type: boolean
+                                    entityType:
+                                      description: |-
+                                        (String) Possible Values: APPMON_SERVER, APPMON_SYSTEM_PROFILE, AWS_ACCOUNT, AWS_APPLICATION_LOAD_BALANCER, AWS_AUTO_SCALING_GROUP, AWS_CLASSIC_LOAD_BALANCER, AWS_NETWORK_LOAD_BALANCER, AWS_RELATIONAL_DATABASE_SERVICE, AZURE, BROWSER_MONITOR, CLOUD_APPLICATION, CLOUD_APPLICATION_NAMESPACE, CLOUD_FOUNDRY_FOUNDATION, CUSTOM_APPLICATION, CUSTOM_DEVICE, CUSTOM_DEVICE_GROUP, DATA_CENTER_SERVICE, ENTERPRISE_APPLICATION, ESXI_HOST, EXTERNAL_MONITOR, HOST, HOST_GROUP, HTTP_MONITOR, KUBERNETES_CLUSTER, KUBERNETES_SERVICE, MOBILE_APPLICATION, OPENSTACK_ACCOUNT, PROCESS_GROUP, QUEUE, SERVICE, WEB_APPLICATION
+                                        Possible Values: `APPMON_SERVER`, `APPMON_SYSTEM_PROFILE`, `AWS_ACCOUNT`, `AWS_APPLICATION_LOAD_BALANCER`, `AWS_AUTO_SCALING_GROUP`, `AWS_CLASSIC_LOAD_BALANCER`, `AWS_NETWORK_LOAD_BALANCER`, `AWS_RELATIONAL_DATABASE_SERVICE`, `AZURE`, `BROWSER_MONITOR`, `CLOUD_APPLICATION`, `CLOUD_APPLICATION_NAMESPACE`, `CLOUD_FOUNDRY_FOUNDATION`, `CUSTOM_APPLICATION`, `CUSTOM_DEVICE`, `CUSTOM_DEVICE_GROUP`, `DATA_CENTER_SERVICE`, `ENTERPRISE_APPLICATION`, `ESXI_HOST`, `EXTERNAL_MONITOR`, `HOST`, `HOST_GROUP`, `HTTP_MONITOR`, `KUBERNETES_CLUSTER`, `KUBERNETES_SERVICE`, `MOBILE_APPLICATION`, `OPENSTACK_ACCOUNT`, `PROCESS_GROUP`, `QUEUE`, `SERVICE`, `WEB_APPLICATION`
+                                      type: string
+                                    hostToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to processes running on matching hosts. entity_type must be set to HOST
+                                        Apply to processes running on matching hosts. `entity_type` must be set to `HOST`
+                                      type: boolean
+                                    pgToHostPropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying hosts of matching process groups. entity_type must be set to PROCESS_GROUP
+                                        Apply to underlying hosts of matching process groups. `entity_type` must be set to `PROCESS_GROUP`
+                                      type: boolean
+                                    pgToServicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to all services provided by the process groups. entity_type must be set to PROCESS_GROUP
+                                        Apply to all services provided by the process groups. `entity_type` must be set to `PROCESS_GROUP`
+                                      type: boolean
+                                    serviceToHostPropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying hosts of matching services. entity_type must be set to SERVICE
+                                        Apply to underlying hosts of matching services. `entity_type` must be set to `SERVICE`
+                                      type: boolean
+                                    serviceToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying process groups of matching services. entity_type must be set to SERVICE
+                                        Apply to underlying process groups of matching services. `entity_type` must be set to `SERVICE`
+                                      type: boolean
+                                  type: object
+                                type: array
+                              dimensionRule:
+                                description: |-
+                                  (Block List, Max: 1) no documentation available (see below for nested schema)
+                                  no documentation available
+                                items:
+                                  properties:
+                                    appliesTo:
+                                      description: |-
+                                        (String) Possible Values: ANY, LOG, METRIC
+                                        Possible Values: `ANY`, `LOG`, `METRIC`
+                                      type: string
+                                    dimensionConditions:
+                                      description: |-
+                                        (Block List, Max: 1) Conditions (see below for nested schema)
+                                        Conditions
+                                      items:
+                                        properties:
+                                          condition:
+                                            description: |-
+                                              (Block Set, Min: 1) Attribute conditions (see below for nested schema)
+                                              Dimension conditions
+                                            items:
+                                              properties:
+                                                conditionType:
+                                                  description: |-
+                                                    (String) Possible Values: DIMENSION, LOG_FILE_NAME, METRIC_KEY
+                                                    Possible Values: `DIMENSION`, `LOG_FILE_NAME`, `METRIC_KEY`
+                                                  type: string
+                                                key:
+                                                  description: |-
+                                                    (String) Possible Values: APPMON_SERVER_NAME, APPMON_SYSTEM_PROFILE_NAME, AWS_ACCOUNT_ID, AWS_ACCOUNT_NAME, AWS_APPLICATION_LOAD_BALANCER_NAME, AWS_APPLICATION_LOAD_BALANCER_TAGS, AWS_AUTO_SCALING_GROUP_NAME, AWS_AUTO_SCALING_GROUP_TAGS, AWS_AVAILABILITY_ZONE_NAME, AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS, AWS_CLASSIC_LOAD_BALANCER_NAME, AWS_CLASSIC_LOAD_BALANCER_TAGS, AWS_NETWORK_LOAD_BALANCER_NAME, AWS_NETWORK_LOAD_BALANCER_TAGS, AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME, AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT, AWS_RELATIONAL_DATABASE_SERVICE_ENGINE, AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS, AWS_RELATIONAL_DATABASE_SERVICE_NAME, AWS_RELATIONAL_DATABASE_SERVICE_PORT, AWS_RELATIONAL_DATABASE_SERVICE_TAGS, AZURE_ENTITY_NAME, AZURE_ENTITY_TAGS, AZURE_MGMT_GROUP_NAME, AZURE_MGMT_GROUP_UUID, AZURE_REGION_NAME, AZURE_SCALE_SET_NAME, AZURE_SUBSCRIPTION_NAME, AZURE_SUBSCRIPTION_UUID, AZURE_TENANT_NAME, AZURE_TENANT_UUID, AZURE_VM_NAME, BROWSER_MONITOR_NAME, BROWSER_MONITOR_TAGS, CLOUD_APPLICATION_LABELS, CLOUD_APPLICATION_NAME, CLOUD_APPLICATION_NAMESPACE_LABELS, CLOUD_APPLICATION_NAMESPACE_NAME, CLOUD_FOUNDRY_FOUNDATION_NAME, CLOUD_FOUNDRY_ORG_NAME, CUSTOM_APPLICATION_NAME, CUSTOM_APPLICATION_PLATFORM, CUSTOM_APPLICATION_TAGS, CUSTOM_APPLICATION_TYPE, CUSTOM_DEVICE_DNS_ADDRESS, CUSTOM_DEVICE_GROUP_NAME, CUSTOM_DEVICE_GROUP_TAGS, CUSTOM_DEVICE_IP_ADDRESS, CUSTOM_DEVICE_METADATA, CUSTOM_DEVICE_NAME, CUSTOM_DEVICE_PORT, CUSTOM_DEVICE_TAGS, CUSTOM_DEVICE_TECHNOLOGY, DATA_CENTER_SERVICE_DECODER_TYPE, DATA_CENTER_SERVICE_IP_ADDRESS, DATA_CENTER_SERVICE_METADATA, DATA_CENTER_SERVICE_NAME, DATA_CENTER_SERVICE_PORT, DATA_CENTER_SERVICE_TAGS, DOCKER_CONTAINER_NAME, DOCKER_FULL_IMAGE_NAME, DOCKER_IMAGE_VERSION, EC2_INSTANCE_AMI_ID, EC2_INSTANCE_AWS_INSTANCE_TYPE, EC2_INSTANCE_AWS_SECURITY_GROUP, EC2_INSTANCE_BEANSTALK_ENV_NAME, EC2_INSTANCE_ID, EC2_INSTANCE_NAME, EC2_INSTANCE_PRIVATE_HOST_NAME, EC2_INSTANCE_PUBLIC_HOST_NAME, EC2_INSTANCE_TAGS, ENTERPRISE_APPLICATION_DECODER_TYPE, ENTERPRISE_APPLICATION_IP_ADDRESS, ENTERPRISE_APPLICATION_METADATA, ENTERPRISE_APPLICATION_NAME, ENTERPRISE_APPLICATION_PORT, ENTERPRISE_APPLICATION_TAGS, ESXI_HOST_CLUSTER_NAME, ESXI_HOST_HARDWARE_MODEL, ESXI_HOST_HARDWARE_VENDOR, ESXI_HOST_NAME, ESXI_HOST_PRODUCT_NAME, ESXI_HOST_PRODUCT_VERSION, ESXI_HOST_TAGS, EXTERNAL_MONITOR_ENGINE_DESCRIPTION, EXTERNAL_MONITOR_ENGINE_NAME, EXTERNAL_MONITOR_ENGINE_TYPE, EXTERNAL_MONITOR_NAME, EXTERNAL_MONITOR_TAGS, GEOLOCATION_SITE_NAME, GOOGLE_CLOUD_PLATFORM_ZONE_NAME, GOOGLE_COMPUTE_INSTANCE_ID, GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE, GOOGLE_COMPUTE_INSTANCE_NAME, GOOGLE_COMPUTE_INSTANCE_PROJECT, GOOGLE_COMPUTE_INSTANCE_PROJECT_ID, GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES, HOST_AIX_LOGICAL_CPU_COUNT, HOST_AIX_SIMULTANEOUS_THREADS, HOST_AIX_VIRTUAL_CPU_COUNT, HOST_ARCHITECTURE, HOST_AWS_NAME_TAG, HOST_AZURE_COMPUTE_MODE, HOST_AZURE_SKU, HOST_AZURE_WEB_APPLICATION_HOST_NAMES, HOST_AZURE_WEB_APPLICATION_SITE_NAMES, HOST_BITNESS, HOST_BOSH_AVAILABILITY_ZONE, HOST_BOSH_DEPLOYMENT_ID, HOST_BOSH_INSTANCE_ID, HOST_BOSH_INSTANCE_NAME, HOST_BOSH_NAME, HOST_BOSH_STEMCELL_VERSION, HOST_CLOUD_TYPE, HOST_CPU_CORES, HOST_CUSTOM_METADATA, HOST_DETECTED_NAME, HOST_GROUP_ID, HOST_GROUP_NAME, HOST_HYPERVISOR_TYPE, HOST_IP_ADDRESS, HOST_KUBERNETES_LABELS, HOST_LOGICAL_CPU_CORES, HOST_NAME, HOST_ONEAGENT_CUSTOM_HOST_NAME, HOST_OS_TYPE, HOST_OS_VERSION, HOST_PAAS_MEMORY_LIMIT, HOST_PAAS_TYPE, HOST_TAGS, HOST_TECHNOLOGY, HTTP_MONITOR_NAME, HTTP_MONITOR_TAGS, KUBERNETES_CLUSTER_NAME, KUBERNETES_NODE_NAME, KUBERNETES_SERVICE_NAME, MOBILE_APPLICATION_NAME, MOBILE_APPLICATION_PLATFORM, MOBILE_APPLICATION_TAGS, NAME_OF_COMPUTE_NODE, OPENSTACK_ACCOUNT_NAME, OPENSTACK_ACCOUNT_PROJECT_NAME, OPENSTACK_AVAILABILITY_ZONE_NAME, OPENSTACK_PROJECT_NAME, OPENSTACK_REGION_NAME, OPENSTACK_VM_INSTANCE_TYPE, OPENSTACK_VM_NAME, OPENSTACK_VM_SECURITY_GROUP, PROCESS_GROUP_AZURE_HOST_NAME, PROCESS_GROUP_AZURE_SITE_NAME, PROCESS_GROUP_CUSTOM_METADATA, PROCESS_GROUP_DETECTED_NAME, PROCESS_GROUP_ID, PROCESS_GROUP_LISTEN_PORT, PROCESS_GROUP_NAME, PROCESS_GROUP_PREDEFINED_METADATA, PROCESS_GROUP_TAGS, PROCESS_GROUP_TECHNOLOGY, PROCESS_GROUP_TECHNOLOGY_EDITION, PROCESS_GROUP_TECHNOLOGY_VERSION, QUEUE_NAME, QUEUE_TECHNOLOGY, QUEUE_VENDOR, SERVICE_AKKA_ACTOR_SYSTEM, SERVICE_CTG_SERVICE_NAME, SERVICE_DATABASE_HOST_NAME, SERVICE_DATABASE_NAME, SERVICE_DATABASE_TOPOLOGY, SERVICE_DATABASE_VENDOR, SERVICE_DETECTED_NAME, SERVICE_ESB_APPLICATION_NAME, SERVICE_IBM_CTG_GATEWAY_URL, SERVICE_MESSAGING_LISTENER_CLASS_NAME, SERVICE_NAME, SERVICE_PORT, SERVICE_PUBLIC_DOMAIN_NAME, SERVICE_REMOTE_ENDPOINT, SERVICE_REMOTE_SERVICE_NAME, SERVICE_TAGS, SERVICE_TECHNOLOGY, SERVICE_TECHNOLOGY_EDITION, SERVICE_TECHNOLOGY_VERSION, SERVICE_TOPOLOGY, SERVICE_TYPE, SERVICE_WEB_APPLICATION_ID, SERVICE_WEB_CONTEXT_ROOT, SERVICE_WEB_SERVER_ENDPOINT, SERVICE_WEB_SERVER_NAME, SERVICE_WEB_SERVICE_NAME, SERVICE_WEB_SERVICE_NAMESPACE, VMWARE_DATACENTER_NAME, VMWARE_VM_NAME, WEB_APPLICATION_NAME, WEB_APPLICATION_NAME_PATTERN, WEB_APPLICATION_TAGS, WEB_APPLICATION_TYPE
+                                                    no documentation available
+                                                  type: string
+                                                ruleMatcher:
+                                                  description: |-
+                                                    (String) Possible Values: BEGINS_WITH, EQUALS
+                                                    Possible Values: `BEGINS_WITH`, `EQUALS`
+                                                  type: string
+                                                value:
+                                                  description: |-
+                                                    (String) no documentation available
+                                                    no documentation available
+                                                  type: string
+                                              type: object
+                                            type: array
+                                        type: object
+                                      type: array
+                                  type: object
+                                type: array
+                              enabled:
+                                description: |-
+                                  (Boolean) This setting is enabled (true) or disabled (false)
+                                  This setting is enabled (`true`) or disabled (`false`)
+                                type: boolean
+                              entitySelector:
+                                description: |-
+                                  (String) Learn more about the Entity selector.
+                                  Learn more about the [Entity selector](https://dt-url.net/apientityselector).
+                                type: string
+                              type:
+                                description: |-
+                                  (String) Possible Values: DIMENSION, ME, SELECTOR
+                                  Possible Values: `DIMENSION`, `ME`, `SELECTOR`
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                type: object
+              initProvider:
+                description: |-
+                  THIS IS A BETA FIELD. It will be honored
+                  unless the Management Policies feature flag is disabled.
+                  InitProvider holds the same fields as ForProvider, with the exception
+                  of Identifier and other resource reference fields. The fields that are
+                  in InitProvider are merged into ForProvider when the resource is created.
+                  The same fields are also added to the terraform ignore_changes hook, to
+                  avoid updating them after creation. This is useful for fields that are
+                  required on creation, but we do not desire to update them after creation,
+                  for example because of an external controller is managing them, like an
+                  autoscaler.
+                properties:
+                  description:
+                    description: |-
+                      (String) Description
+                      Description
+                    type: string
+                  legacyId:
+                    description: |-
+                      (String) The ID of this setting when referred to by the Config REST API V1
+                      The ID of this setting when referred to by the Config REST API V1
+                    type: string
+                  name:
+                    description: |-
+                      if there are policies that are referencing this Management zone, they will need to be adapted to the new name!
+                      **Be careful when renaming** - if there are policies that are referencing this Management zone, they will need to be adapted to the new name!
+                    type: string
+                  rules:
+                    description: |-
+                      (Block List, Max: 1) Rules (see below for nested schema)
+                      Rules
+                    items:
+                      properties:
+                        rule:
+                          description: |-
+                            (Block Set, Min: 1) A management zone rule (see below for nested schema)
+                            A management zone rule
+                          items:
+                            properties:
+                              attributeRule:
+                                description: |-
+                                  (Block List, Max: 1) no documentation available (see below for nested schema)
+                                  no documentation available
+                                items:
+                                  properties:
+                                    attributeConditions:
+                                      description: |-
+                                        (Block List, Min: 1, Max: 1) no documentation available (see below for nested schema)
+                                        no documentation available
+                                      items:
+                                        properties:
+                                          condition:
+                                            description: |-
+                                              (Block Set, Min: 1) Attribute conditions (see below for nested schema)
+                                              Attribute conditions
+                                            items:
+                                              properties:
+                                                caseSensitive:
+                                                  description: |-
+                                                    (Boolean) Case sensitive
+                                                    Case sensitive
+                                                  type: boolean
+                                                dynamicKey:
+                                                  description: |-
+                                                    (String) Dynamic key
+                                                    Dynamic key
+                                                  type: string
+                                                dynamicKeySource:
+                                                  description: |-
+                                                    (String) Key source
+                                                    Key source
+                                                  type: string
+                                                entityId:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                enumValue:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                integerValue:
+                                                  description: |-
+                                                    (Number) Value
+                                                    Value
+                                                  type: number
+                                                key:
+                                                  description: |-
+                                                    (String) Possible Values: APPMON_SERVER_NAME, APPMON_SYSTEM_PROFILE_NAME, AWS_ACCOUNT_ID, AWS_ACCOUNT_NAME, AWS_APPLICATION_LOAD_BALANCER_NAME, AWS_APPLICATION_LOAD_BALANCER_TAGS, AWS_AUTO_SCALING_GROUP_NAME, AWS_AUTO_SCALING_GROUP_TAGS, AWS_AVAILABILITY_ZONE_NAME, AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS, AWS_CLASSIC_LOAD_BALANCER_NAME, AWS_CLASSIC_LOAD_BALANCER_TAGS, AWS_NETWORK_LOAD_BALANCER_NAME, AWS_NETWORK_LOAD_BALANCER_TAGS, AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME, AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT, AWS_RELATIONAL_DATABASE_SERVICE_ENGINE, AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS, AWS_RELATIONAL_DATABASE_SERVICE_NAME, AWS_RELATIONAL_DATABASE_SERVICE_PORT, AWS_RELATIONAL_DATABASE_SERVICE_TAGS, AZURE_ENTITY_NAME, AZURE_ENTITY_TAGS, AZURE_MGMT_GROUP_NAME, AZURE_MGMT_GROUP_UUID, AZURE_REGION_NAME, AZURE_SCALE_SET_NAME, AZURE_SUBSCRIPTION_NAME, AZURE_SUBSCRIPTION_UUID, AZURE_TENANT_NAME, AZURE_TENANT_UUID, AZURE_VM_NAME, BROWSER_MONITOR_NAME, BROWSER_MONITOR_TAGS, CLOUD_APPLICATION_LABELS, CLOUD_APPLICATION_NAME, CLOUD_APPLICATION_NAMESPACE_LABELS, CLOUD_APPLICATION_NAMESPACE_NAME, CLOUD_FOUNDRY_FOUNDATION_NAME, CLOUD_FOUNDRY_ORG_NAME, CUSTOM_APPLICATION_NAME, CUSTOM_APPLICATION_PLATFORM, CUSTOM_APPLICATION_TAGS, CUSTOM_APPLICATION_TYPE, CUSTOM_DEVICE_DNS_ADDRESS, CUSTOM_DEVICE_GROUP_NAME, CUSTOM_DEVICE_GROUP_TAGS, CUSTOM_DEVICE_IP_ADDRESS, CUSTOM_DEVICE_METADATA, CUSTOM_DEVICE_NAME, CUSTOM_DEVICE_PORT, CUSTOM_DEVICE_TAGS, CUSTOM_DEVICE_TECHNOLOGY, DATA_CENTER_SERVICE_DECODER_TYPE, DATA_CENTER_SERVICE_IP_ADDRESS, DATA_CENTER_SERVICE_METADATA, DATA_CENTER_SERVICE_NAME, DATA_CENTER_SERVICE_PORT, DATA_CENTER_SERVICE_TAGS, DOCKER_CONTAINER_NAME, DOCKER_FULL_IMAGE_NAME, DOCKER_IMAGE_VERSION, EC2_INSTANCE_AMI_ID, EC2_INSTANCE_AWS_INSTANCE_TYPE, EC2_INSTANCE_AWS_SECURITY_GROUP, EC2_INSTANCE_BEANSTALK_ENV_NAME, EC2_INSTANCE_ID, EC2_INSTANCE_NAME, EC2_INSTANCE_PRIVATE_HOST_NAME, EC2_INSTANCE_PUBLIC_HOST_NAME, EC2_INSTANCE_TAGS, ENTERPRISE_APPLICATION_DECODER_TYPE, ENTERPRISE_APPLICATION_IP_ADDRESS, ENTERPRISE_APPLICATION_METADATA, ENTERPRISE_APPLICATION_NAME, ENTERPRISE_APPLICATION_PORT, ENTERPRISE_APPLICATION_TAGS, ESXI_HOST_CLUSTER_NAME, ESXI_HOST_HARDWARE_MODEL, ESXI_HOST_HARDWARE_VENDOR, ESXI_HOST_NAME, ESXI_HOST_PRODUCT_NAME, ESXI_HOST_PRODUCT_VERSION, ESXI_HOST_TAGS, EXTERNAL_MONITOR_ENGINE_DESCRIPTION, EXTERNAL_MONITOR_ENGINE_NAME, EXTERNAL_MONITOR_ENGINE_TYPE, EXTERNAL_MONITOR_NAME, EXTERNAL_MONITOR_TAGS, GEOLOCATION_SITE_NAME, GOOGLE_CLOUD_PLATFORM_ZONE_NAME, GOOGLE_COMPUTE_INSTANCE_ID, GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE, GOOGLE_COMPUTE_INSTANCE_NAME, GOOGLE_COMPUTE_INSTANCE_PROJECT, GOOGLE_COMPUTE_INSTANCE_PROJECT_ID, GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES, HOST_AIX_LOGICAL_CPU_COUNT, HOST_AIX_SIMULTANEOUS_THREADS, HOST_AIX_VIRTUAL_CPU_COUNT, HOST_ARCHITECTURE, HOST_AWS_NAME_TAG, HOST_AZURE_COMPUTE_MODE, HOST_AZURE_SKU, HOST_AZURE_WEB_APPLICATION_HOST_NAMES, HOST_AZURE_WEB_APPLICATION_SITE_NAMES, HOST_BITNESS, HOST_BOSH_AVAILABILITY_ZONE, HOST_BOSH_DEPLOYMENT_ID, HOST_BOSH_INSTANCE_ID, HOST_BOSH_INSTANCE_NAME, HOST_BOSH_NAME, HOST_BOSH_STEMCELL_VERSION, HOST_CLOUD_TYPE, HOST_CPU_CORES, HOST_CUSTOM_METADATA, HOST_DETECTED_NAME, HOST_GROUP_ID, HOST_GROUP_NAME, HOST_HYPERVISOR_TYPE, HOST_IP_ADDRESS, HOST_KUBERNETES_LABELS, HOST_LOGICAL_CPU_CORES, HOST_NAME, HOST_ONEAGENT_CUSTOM_HOST_NAME, HOST_OS_TYPE, HOST_OS_VERSION, HOST_PAAS_MEMORY_LIMIT, HOST_PAAS_TYPE, HOST_TAGS, HOST_TECHNOLOGY, HTTP_MONITOR_NAME, HTTP_MONITOR_TAGS, KUBERNETES_CLUSTER_NAME, KUBERNETES_NODE_NAME, KUBERNETES_SERVICE_NAME, MOBILE_APPLICATION_NAME, MOBILE_APPLICATION_PLATFORM, MOBILE_APPLICATION_TAGS, NAME_OF_COMPUTE_NODE, OPENSTACK_ACCOUNT_NAME, OPENSTACK_ACCOUNT_PROJECT_NAME, OPENSTACK_AVAILABILITY_ZONE_NAME, OPENSTACK_PROJECT_NAME, OPENSTACK_REGION_NAME, OPENSTACK_VM_INSTANCE_TYPE, OPENSTACK_VM_NAME, OPENSTACK_VM_SECURITY_GROUP, PROCESS_GROUP_AZURE_HOST_NAME, PROCESS_GROUP_AZURE_SITE_NAME, PROCESS_GROUP_CUSTOM_METADATA, PROCESS_GROUP_DETECTED_NAME, PROCESS_GROUP_ID, PROCESS_GROUP_LISTEN_PORT, PROCESS_GROUP_NAME, PROCESS_GROUP_PREDEFINED_METADATA, PROCESS_GROUP_TAGS, PROCESS_GROUP_TECHNOLOGY, PROCESS_GROUP_TECHNOLOGY_EDITION, PROCESS_GROUP_TECHNOLOGY_VERSION, QUEUE_NAME, QUEUE_TECHNOLOGY, QUEUE_VENDOR, SERVICE_AKKA_ACTOR_SYSTEM, SERVICE_CTG_SERVICE_NAME, SERVICE_DATABASE_HOST_NAME, SERVICE_DATABASE_NAME, SERVICE_DATABASE_TOPOLOGY, SERVICE_DATABASE_VENDOR, SERVICE_DETECTED_NAME, SERVICE_ESB_APPLICATION_NAME, SERVICE_IBM_CTG_GATEWAY_URL, SERVICE_MESSAGING_LISTENER_CLASS_NAME, SERVICE_NAME, SERVICE_PORT, SERVICE_PUBLIC_DOMAIN_NAME, SERVICE_REMOTE_ENDPOINT, SERVICE_REMOTE_SERVICE_NAME, SERVICE_TAGS, SERVICE_TECHNOLOGY, SERVICE_TECHNOLOGY_EDITION, SERVICE_TECHNOLOGY_VERSION, SERVICE_TOPOLOGY, SERVICE_TYPE, SERVICE_WEB_APPLICATION_ID, SERVICE_WEB_CONTEXT_ROOT, SERVICE_WEB_SERVER_ENDPOINT, SERVICE_WEB_SERVER_NAME, SERVICE_WEB_SERVICE_NAME, SERVICE_WEB_SERVICE_NAMESPACE, VMWARE_DATACENTER_NAME, VMWARE_VM_NAME, WEB_APPLICATION_NAME, WEB_APPLICATION_NAME_PATTERN, WEB_APPLICATION_TAGS, WEB_APPLICATION_TYPE
+                                                    Possible Values: `APPMON_SERVER_NAME`, `APPMON_SYSTEM_PROFILE_NAME`, `AWS_ACCOUNT_ID`, `AWS_ACCOUNT_NAME`, `AWS_APPLICATION_LOAD_BALANCER_NAME`, `AWS_APPLICATION_LOAD_BALANCER_TAGS`, `AWS_AUTO_SCALING_GROUP_NAME`, `AWS_AUTO_SCALING_GROUP_TAGS`, `AWS_AVAILABILITY_ZONE_NAME`, `AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS`, `AWS_CLASSIC_LOAD_BALANCER_NAME`, `AWS_CLASSIC_LOAD_BALANCER_TAGS`, `AWS_NETWORK_LOAD_BALANCER_NAME`, `AWS_NETWORK_LOAD_BALANCER_TAGS`, `AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME`, `AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT`, `AWS_RELATIONAL_DATABASE_SERVICE_ENGINE`, `AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS`, `AWS_RELATIONAL_DATABASE_SERVICE_NAME`, `AWS_RELATIONAL_DATABASE_SERVICE_PORT`, `AWS_RELATIONAL_DATABASE_SERVICE_TAGS`, `AZURE_ENTITY_NAME`, `AZURE_ENTITY_TAGS`, `AZURE_MGMT_GROUP_NAME`, `AZURE_MGMT_GROUP_UUID`, `AZURE_REGION_NAME`, `AZURE_SCALE_SET_NAME`, `AZURE_SUBSCRIPTION_NAME`, `AZURE_SUBSCRIPTION_UUID`, `AZURE_TENANT_NAME`, `AZURE_TENANT_UUID`, `AZURE_VM_NAME`, `BROWSER_MONITOR_NAME`, `BROWSER_MONITOR_TAGS`, `CLOUD_APPLICATION_LABELS`, `CLOUD_APPLICATION_NAME`, `CLOUD_APPLICATION_NAMESPACE_LABELS`, `CLOUD_APPLICATION_NAMESPACE_NAME`, `CLOUD_FOUNDRY_FOUNDATION_NAME`, `CLOUD_FOUNDRY_ORG_NAME`, `CUSTOM_APPLICATION_NAME`, `CUSTOM_APPLICATION_PLATFORM`, `CUSTOM_APPLICATION_TAGS`, `CUSTOM_APPLICATION_TYPE`, `CUSTOM_DEVICE_DNS_ADDRESS`, `CUSTOM_DEVICE_GROUP_NAME`, `CUSTOM_DEVICE_GROUP_TAGS`, `CUSTOM_DEVICE_IP_ADDRESS`, `CUSTOM_DEVICE_METADATA`, `CUSTOM_DEVICE_NAME`, `CUSTOM_DEVICE_PORT`, `CUSTOM_DEVICE_TAGS`, `CUSTOM_DEVICE_TECHNOLOGY`, `DATA_CENTER_SERVICE_DECODER_TYPE`, `DATA_CENTER_SERVICE_IP_ADDRESS`, `DATA_CENTER_SERVICE_METADATA`, `DATA_CENTER_SERVICE_NAME`, `DATA_CENTER_SERVICE_PORT`, `DATA_CENTER_SERVICE_TAGS`, `DOCKER_CONTAINER_NAME`, `DOCKER_FULL_IMAGE_NAME`, `DOCKER_IMAGE_VERSION`, `EC2_INSTANCE_AMI_ID`, `EC2_INSTANCE_AWS_INSTANCE_TYPE`, `EC2_INSTANCE_AWS_SECURITY_GROUP`, `EC2_INSTANCE_BEANSTALK_ENV_NAME`, `EC2_INSTANCE_ID`, `EC2_INSTANCE_NAME`, `EC2_INSTANCE_PRIVATE_HOST_NAME`, `EC2_INSTANCE_PUBLIC_HOST_NAME`, `EC2_INSTANCE_TAGS`, `ENTERPRISE_APPLICATION_DECODER_TYPE`, `ENTERPRISE_APPLICATION_IP_ADDRESS`, `ENTERPRISE_APPLICATION_METADATA`, `ENTERPRISE_APPLICATION_NAME`, `ENTERPRISE_APPLICATION_PORT`, `ENTERPRISE_APPLICATION_TAGS`, `ESXI_HOST_CLUSTER_NAME`, `ESXI_HOST_HARDWARE_MODEL`, `ESXI_HOST_HARDWARE_VENDOR`, `ESXI_HOST_NAME`, `ESXI_HOST_PRODUCT_NAME`, `ESXI_HOST_PRODUCT_VERSION`, `ESXI_HOST_TAGS`, `EXTERNAL_MONITOR_ENGINE_DESCRIPTION`, `EXTERNAL_MONITOR_ENGINE_NAME`, `EXTERNAL_MONITOR_ENGINE_TYPE`, `EXTERNAL_MONITOR_NAME`, `EXTERNAL_MONITOR_TAGS`, `GEOLOCATION_SITE_NAME`, `GOOGLE_CLOUD_PLATFORM_ZONE_NAME`, `GOOGLE_COMPUTE_INSTANCE_ID`, `GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE`, `GOOGLE_COMPUTE_INSTANCE_NAME`, `GOOGLE_COMPUTE_INSTANCE_PROJECT`, `GOOGLE_COMPUTE_INSTANCE_PROJECT_ID`, `GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES`, `HOST_AIX_LOGICAL_CPU_COUNT`, `HOST_AIX_SIMULTANEOUS_THREADS`, `HOST_AIX_VIRTUAL_CPU_COUNT`, `HOST_ARCHITECTURE`, `HOST_AWS_NAME_TAG`, `HOST_AZURE_COMPUTE_MODE`, `HOST_AZURE_SKU`, `HOST_AZURE_WEB_APPLICATION_HOST_NAMES`, `HOST_AZURE_WEB_APPLICATION_SITE_NAMES`, `HOST_BITNESS`, `HOST_BOSH_AVAILABILITY_ZONE`, `HOST_BOSH_DEPLOYMENT_ID`, `HOST_BOSH_INSTANCE_ID`, `HOST_BOSH_INSTANCE_NAME`, `HOST_BOSH_NAME`, `HOST_BOSH_STEMCELL_VERSION`, `HOST_CLOUD_TYPE`, `HOST_CPU_CORES`, `HOST_CUSTOM_METADATA`, `HOST_DETECTED_NAME`, `HOST_GROUP_ID`, `HOST_GROUP_NAME`, `HOST_HYPERVISOR_TYPE`, `HOST_IP_ADDRESS`, `HOST_KUBERNETES_LABELS`, `HOST_LOGICAL_CPU_CORES`, `HOST_NAME`, `HOST_ONEAGENT_CUSTOM_HOST_NAME`, `HOST_OS_TYPE`, `HOST_OS_VERSION`, `HOST_PAAS_MEMORY_LIMIT`, `HOST_PAAS_TYPE`, `HOST_TAGS`, `HOST_TECHNOLOGY`, `HTTP_MONITOR_NAME`, `HTTP_MONITOR_TAGS`, `KUBERNETES_CLUSTER_NAME`, `KUBERNETES_NODE_NAME`, `KUBERNETES_SERVICE_NAME`, `MOBILE_APPLICATION_NAME`, `MOBILE_APPLICATION_PLATFORM`, `MOBILE_APPLICATION_TAGS`, `NAME_OF_COMPUTE_NODE`, `OPENSTACK_ACCOUNT_NAME`, `OPENSTACK_ACCOUNT_PROJECT_NAME`, `OPENSTACK_AVAILABILITY_ZONE_NAME`, `OPENSTACK_PROJECT_NAME`, `OPENSTACK_REGION_NAME`, `OPENSTACK_VM_INSTANCE_TYPE`, `OPENSTACK_VM_NAME`, `OPENSTACK_VM_SECURITY_GROUP`, `PROCESS_GROUP_AZURE_HOST_NAME`, `PROCESS_GROUP_AZURE_SITE_NAME`, `PROCESS_GROUP_CUSTOM_METADATA`, `PROCESS_GROUP_DETECTED_NAME`, `PROCESS_GROUP_ID`, `PROCESS_GROUP_LISTEN_PORT`, `PROCESS_GROUP_NAME`, `PROCESS_GROUP_PREDEFINED_METADATA`, `PROCESS_GROUP_TAGS`, `PROCESS_GROUP_TECHNOLOGY`, `PROCESS_GROUP_TECHNOLOGY_EDITION`, `PROCESS_GROUP_TECHNOLOGY_VERSION`, `QUEUE_NAME`, `QUEUE_TECHNOLOGY`, `QUEUE_VENDOR`, `SERVICE_AKKA_ACTOR_SYSTEM`, `SERVICE_CTG_SERVICE_NAME`, `SERVICE_DATABASE_HOST_NAME`, `SERVICE_DATABASE_NAME`, `SERVICE_DATABASE_TOPOLOGY`, `SERVICE_DATABASE_VENDOR`, `SERVICE_DETECTED_NAME`, `SERVICE_ESB_APPLICATION_NAME`, `SERVICE_IBM_CTG_GATEWAY_URL`, `SERVICE_MESSAGING_LISTENER_CLASS_NAME`, `SERVICE_NAME`, `SERVICE_PORT`, `SERVICE_PUBLIC_DOMAIN_NAME`, `SERVICE_REMOTE_ENDPOINT`, `SERVICE_REMOTE_SERVICE_NAME`, `SERVICE_TAGS`, `SERVICE_TECHNOLOGY`, `SERVICE_TECHNOLOGY_EDITION`, `SERVICE_TECHNOLOGY_VERSION`, `SERVICE_TOPOLOGY`, `SERVICE_TYPE`, `SERVICE_WEB_APPLICATION_ID`, `SERVICE_WEB_CONTEXT_ROOT`, `SERVICE_WEB_SERVER_ENDPOINT`, `SERVICE_WEB_SERVER_NAME`, `SERVICE_WEB_SERVICE_NAME`, `SERVICE_WEB_SERVICE_NAMESPACE`, `VMWARE_DATACENTER_NAME`, `VMWARE_VM_NAME`, `WEB_APPLICATION_NAME`, `WEB_APPLICATION_NAME_PATTERN`, `WEB_APPLICATION_TAGS`, `WEB_APPLICATION_TYPE`
+                                                  type: string
+                                                operator:
+                                                  description: |-
+                                                    (String) Possible Values: BEGINS_WITH, CONTAINS, ENDS_WITH, EQUALS, EXISTS, GREATER_THAN, GREATER_THAN_OR_EQUAL, IS_IP_IN_RANGE, LOWER_THAN, LOWER_THAN_OR_EQUAL, NOT_BEGINS_WITH, NOT_CONTAINS, NOT_ENDS_WITH, NOT_EQUALS, NOT_EXISTS, NOT_GREATER_THAN, NOT_GREATER_THAN_OR_EQUAL, NOT_IS_IP_IN_RANGE, NOT_LOWER_THAN, NOT_LOWER_THAN_OR_EQUAL, NOT_REGEX_MATCHES, NOT_TAG_KEY_EQUALS, REGEX_MATCHES, TAG_KEY_EQUALS
+                                                    Possible Values: `BEGINS_WITH`, `CONTAINS`, `ENDS_WITH`, `EQUALS`, `EXISTS`, `GREATER_THAN`, `GREATER_THAN_OR_EQUAL`, `IS_IP_IN_RANGE`, `LOWER_THAN`, `LOWER_THAN_OR_EQUAL`, `NOT_BEGINS_WITH`, `NOT_CONTAINS`, `NOT_ENDS_WITH`, `NOT_EQUALS`, `NOT_EXISTS`, `NOT_GREATER_THAN`, `NOT_GREATER_THAN_OR_EQUAL`, `NOT_IS_IP_IN_RANGE`, `NOT_LOWER_THAN`, `NOT_LOWER_THAN_OR_EQUAL`, `NOT_REGEX_MATCHES`, `NOT_TAG_KEY_EQUALS`, `REGEX_MATCHES`, `TAG_KEY_EQUALS`
+                                                  type: string
+                                                stringValue:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                tag:
+                                                  description: |-
+                                                    (String) Format: [CONTEXT]tagKey:tagValue
+                                                    Format: `[CONTEXT]tagKey:tagValue`
+                                                  type: string
+                                              type: object
+                                            type: array
+                                        type: object
+                                      type: array
+                                    azureToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to process groups connected to matching Azure entities
+                                        Apply to process groups connected to matching Azure entities
+                                      type: boolean
+                                    azureToServicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to services provided by matching Azure entities
+                                        Apply to services provided by matching Azure entities
+                                      type: boolean
+                                    customDeviceGroupToCustomDevicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to custom devices in a custom device group
+                                        Apply to custom devices in a custom device group
+                                      type: boolean
+                                    entityType:
+                                      description: |-
+                                        (String) Possible Values: APPMON_SERVER, APPMON_SYSTEM_PROFILE, AWS_ACCOUNT, AWS_APPLICATION_LOAD_BALANCER, AWS_AUTO_SCALING_GROUP, AWS_CLASSIC_LOAD_BALANCER, AWS_NETWORK_LOAD_BALANCER, AWS_RELATIONAL_DATABASE_SERVICE, AZURE, BROWSER_MONITOR, CLOUD_APPLICATION, CLOUD_APPLICATION_NAMESPACE, CLOUD_FOUNDRY_FOUNDATION, CUSTOM_APPLICATION, CUSTOM_DEVICE, CUSTOM_DEVICE_GROUP, DATA_CENTER_SERVICE, ENTERPRISE_APPLICATION, ESXI_HOST, EXTERNAL_MONITOR, HOST, HOST_GROUP, HTTP_MONITOR, KUBERNETES_CLUSTER, KUBERNETES_SERVICE, MOBILE_APPLICATION, OPENSTACK_ACCOUNT, PROCESS_GROUP, QUEUE, SERVICE, WEB_APPLICATION
+                                        Possible Values: `APPMON_SERVER`, `APPMON_SYSTEM_PROFILE`, `AWS_ACCOUNT`, `AWS_APPLICATION_LOAD_BALANCER`, `AWS_AUTO_SCALING_GROUP`, `AWS_CLASSIC_LOAD_BALANCER`, `AWS_NETWORK_LOAD_BALANCER`, `AWS_RELATIONAL_DATABASE_SERVICE`, `AZURE`, `BROWSER_MONITOR`, `CLOUD_APPLICATION`, `CLOUD_APPLICATION_NAMESPACE`, `CLOUD_FOUNDRY_FOUNDATION`, `CUSTOM_APPLICATION`, `CUSTOM_DEVICE`, `CUSTOM_DEVICE_GROUP`, `DATA_CENTER_SERVICE`, `ENTERPRISE_APPLICATION`, `ESXI_HOST`, `EXTERNAL_MONITOR`, `HOST`, `HOST_GROUP`, `HTTP_MONITOR`, `KUBERNETES_CLUSTER`, `KUBERNETES_SERVICE`, `MOBILE_APPLICATION`, `OPENSTACK_ACCOUNT`, `PROCESS_GROUP`, `QUEUE`, `SERVICE`, `WEB_APPLICATION`
+                                      type: string
+                                    hostToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to processes running on matching hosts. entity_type must be set to HOST
+                                        Apply to processes running on matching hosts. `entity_type` must be set to `HOST`
+                                      type: boolean
+                                    pgToHostPropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying hosts of matching process groups. entity_type must be set to PROCESS_GROUP
+                                        Apply to underlying hosts of matching process groups. `entity_type` must be set to `PROCESS_GROUP`
+                                      type: boolean
+                                    pgToServicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to all services provided by the process groups. entity_type must be set to PROCESS_GROUP
+                                        Apply to all services provided by the process groups. `entity_type` must be set to `PROCESS_GROUP`
+                                      type: boolean
+                                    serviceToHostPropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying hosts of matching services. entity_type must be set to SERVICE
+                                        Apply to underlying hosts of matching services. `entity_type` must be set to `SERVICE`
+                                      type: boolean
+                                    serviceToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying process groups of matching services. entity_type must be set to SERVICE
+                                        Apply to underlying process groups of matching services. `entity_type` must be set to `SERVICE`
+                                      type: boolean
+                                  type: object
+                                type: array
+                              dimensionRule:
+                                description: |-
+                                  (Block List, Max: 1) no documentation available (see below for nested schema)
+                                  no documentation available
+                                items:
+                                  properties:
+                                    appliesTo:
+                                      description: |-
+                                        (String) Possible Values: ANY, LOG, METRIC
+                                        Possible Values: `ANY`, `LOG`, `METRIC`
+                                      type: string
+                                    dimensionConditions:
+                                      description: |-
+                                        (Block List, Max: 1) Conditions (see below for nested schema)
+                                        Conditions
+                                      items:
+                                        properties:
+                                          condition:
+                                            description: |-
+                                              (Block Set, Min: 1) Attribute conditions (see below for nested schema)
+                                              Dimension conditions
+                                            items:
+                                              properties:
+                                                conditionType:
+                                                  description: |-
+                                                    (String) Possible Values: DIMENSION, LOG_FILE_NAME, METRIC_KEY
+                                                    Possible Values: `DIMENSION`, `LOG_FILE_NAME`, `METRIC_KEY`
+                                                  type: string
+                                                key:
+                                                  description: |-
+                                                    (String) Possible Values: APPMON_SERVER_NAME, APPMON_SYSTEM_PROFILE_NAME, AWS_ACCOUNT_ID, AWS_ACCOUNT_NAME, AWS_APPLICATION_LOAD_BALANCER_NAME, AWS_APPLICATION_LOAD_BALANCER_TAGS, AWS_AUTO_SCALING_GROUP_NAME, AWS_AUTO_SCALING_GROUP_TAGS, AWS_AVAILABILITY_ZONE_NAME, AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS, AWS_CLASSIC_LOAD_BALANCER_NAME, AWS_CLASSIC_LOAD_BALANCER_TAGS, AWS_NETWORK_LOAD_BALANCER_NAME, AWS_NETWORK_LOAD_BALANCER_TAGS, AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME, AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT, AWS_RELATIONAL_DATABASE_SERVICE_ENGINE, AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS, AWS_RELATIONAL_DATABASE_SERVICE_NAME, AWS_RELATIONAL_DATABASE_SERVICE_PORT, AWS_RELATIONAL_DATABASE_SERVICE_TAGS, AZURE_ENTITY_NAME, AZURE_ENTITY_TAGS, AZURE_MGMT_GROUP_NAME, AZURE_MGMT_GROUP_UUID, AZURE_REGION_NAME, AZURE_SCALE_SET_NAME, AZURE_SUBSCRIPTION_NAME, AZURE_SUBSCRIPTION_UUID, AZURE_TENANT_NAME, AZURE_TENANT_UUID, AZURE_VM_NAME, BROWSER_MONITOR_NAME, BROWSER_MONITOR_TAGS, CLOUD_APPLICATION_LABELS, CLOUD_APPLICATION_NAME, CLOUD_APPLICATION_NAMESPACE_LABELS, CLOUD_APPLICATION_NAMESPACE_NAME, CLOUD_FOUNDRY_FOUNDATION_NAME, CLOUD_FOUNDRY_ORG_NAME, CUSTOM_APPLICATION_NAME, CUSTOM_APPLICATION_PLATFORM, CUSTOM_APPLICATION_TAGS, CUSTOM_APPLICATION_TYPE, CUSTOM_DEVICE_DNS_ADDRESS, CUSTOM_DEVICE_GROUP_NAME, CUSTOM_DEVICE_GROUP_TAGS, CUSTOM_DEVICE_IP_ADDRESS, CUSTOM_DEVICE_METADATA, CUSTOM_DEVICE_NAME, CUSTOM_DEVICE_PORT, CUSTOM_DEVICE_TAGS, CUSTOM_DEVICE_TECHNOLOGY, DATA_CENTER_SERVICE_DECODER_TYPE, DATA_CENTER_SERVICE_IP_ADDRESS, DATA_CENTER_SERVICE_METADATA, DATA_CENTER_SERVICE_NAME, DATA_CENTER_SERVICE_PORT, DATA_CENTER_SERVICE_TAGS, DOCKER_CONTAINER_NAME, DOCKER_FULL_IMAGE_NAME, DOCKER_IMAGE_VERSION, EC2_INSTANCE_AMI_ID, EC2_INSTANCE_AWS_INSTANCE_TYPE, EC2_INSTANCE_AWS_SECURITY_GROUP, EC2_INSTANCE_BEANSTALK_ENV_NAME, EC2_INSTANCE_ID, EC2_INSTANCE_NAME, EC2_INSTANCE_PRIVATE_HOST_NAME, EC2_INSTANCE_PUBLIC_HOST_NAME, EC2_INSTANCE_TAGS, ENTERPRISE_APPLICATION_DECODER_TYPE, ENTERPRISE_APPLICATION_IP_ADDRESS, ENTERPRISE_APPLICATION_METADATA, ENTERPRISE_APPLICATION_NAME, ENTERPRISE_APPLICATION_PORT, ENTERPRISE_APPLICATION_TAGS, ESXI_HOST_CLUSTER_NAME, ESXI_HOST_HARDWARE_MODEL, ESXI_HOST_HARDWARE_VENDOR, ESXI_HOST_NAME, ESXI_HOST_PRODUCT_NAME, ESXI_HOST_PRODUCT_VERSION, ESXI_HOST_TAGS, EXTERNAL_MONITOR_ENGINE_DESCRIPTION, EXTERNAL_MONITOR_ENGINE_NAME, EXTERNAL_MONITOR_ENGINE_TYPE, EXTERNAL_MONITOR_NAME, EXTERNAL_MONITOR_TAGS, GEOLOCATION_SITE_NAME, GOOGLE_CLOUD_PLATFORM_ZONE_NAME, GOOGLE_COMPUTE_INSTANCE_ID, GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE, GOOGLE_COMPUTE_INSTANCE_NAME, GOOGLE_COMPUTE_INSTANCE_PROJECT, GOOGLE_COMPUTE_INSTANCE_PROJECT_ID, GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES, HOST_AIX_LOGICAL_CPU_COUNT, HOST_AIX_SIMULTANEOUS_THREADS, HOST_AIX_VIRTUAL_CPU_COUNT, HOST_ARCHITECTURE, HOST_AWS_NAME_TAG, HOST_AZURE_COMPUTE_MODE, HOST_AZURE_SKU, HOST_AZURE_WEB_APPLICATION_HOST_NAMES, HOST_AZURE_WEB_APPLICATION_SITE_NAMES, HOST_BITNESS, HOST_BOSH_AVAILABILITY_ZONE, HOST_BOSH_DEPLOYMENT_ID, HOST_BOSH_INSTANCE_ID, HOST_BOSH_INSTANCE_NAME, HOST_BOSH_NAME, HOST_BOSH_STEMCELL_VERSION, HOST_CLOUD_TYPE, HOST_CPU_CORES, HOST_CUSTOM_METADATA, HOST_DETECTED_NAME, HOST_GROUP_ID, HOST_GROUP_NAME, HOST_HYPERVISOR_TYPE, HOST_IP_ADDRESS, HOST_KUBERNETES_LABELS, HOST_LOGICAL_CPU_CORES, HOST_NAME, HOST_ONEAGENT_CUSTOM_HOST_NAME, HOST_OS_TYPE, HOST_OS_VERSION, HOST_PAAS_MEMORY_LIMIT, HOST_PAAS_TYPE, HOST_TAGS, HOST_TECHNOLOGY, HTTP_MONITOR_NAME, HTTP_MONITOR_TAGS, KUBERNETES_CLUSTER_NAME, KUBERNETES_NODE_NAME, KUBERNETES_SERVICE_NAME, MOBILE_APPLICATION_NAME, MOBILE_APPLICATION_PLATFORM, MOBILE_APPLICATION_TAGS, NAME_OF_COMPUTE_NODE, OPENSTACK_ACCOUNT_NAME, OPENSTACK_ACCOUNT_PROJECT_NAME, OPENSTACK_AVAILABILITY_ZONE_NAME, OPENSTACK_PROJECT_NAME, OPENSTACK_REGION_NAME, OPENSTACK_VM_INSTANCE_TYPE, OPENSTACK_VM_NAME, OPENSTACK_VM_SECURITY_GROUP, PROCESS_GROUP_AZURE_HOST_NAME, PROCESS_GROUP_AZURE_SITE_NAME, PROCESS_GROUP_CUSTOM_METADATA, PROCESS_GROUP_DETECTED_NAME, PROCESS_GROUP_ID, PROCESS_GROUP_LISTEN_PORT, PROCESS_GROUP_NAME, PROCESS_GROUP_PREDEFINED_METADATA, PROCESS_GROUP_TAGS, PROCESS_GROUP_TECHNOLOGY, PROCESS_GROUP_TECHNOLOGY_EDITION, PROCESS_GROUP_TECHNOLOGY_VERSION, QUEUE_NAME, QUEUE_TECHNOLOGY, QUEUE_VENDOR, SERVICE_AKKA_ACTOR_SYSTEM, SERVICE_CTG_SERVICE_NAME, SERVICE_DATABASE_HOST_NAME, SERVICE_DATABASE_NAME, SERVICE_DATABASE_TOPOLOGY, SERVICE_DATABASE_VENDOR, SERVICE_DETECTED_NAME, SERVICE_ESB_APPLICATION_NAME, SERVICE_IBM_CTG_GATEWAY_URL, SERVICE_MESSAGING_LISTENER_CLASS_NAME, SERVICE_NAME, SERVICE_PORT, SERVICE_PUBLIC_DOMAIN_NAME, SERVICE_REMOTE_ENDPOINT, SERVICE_REMOTE_SERVICE_NAME, SERVICE_TAGS, SERVICE_TECHNOLOGY, SERVICE_TECHNOLOGY_EDITION, SERVICE_TECHNOLOGY_VERSION, SERVICE_TOPOLOGY, SERVICE_TYPE, SERVICE_WEB_APPLICATION_ID, SERVICE_WEB_CONTEXT_ROOT, SERVICE_WEB_SERVER_ENDPOINT, SERVICE_WEB_SERVER_NAME, SERVICE_WEB_SERVICE_NAME, SERVICE_WEB_SERVICE_NAMESPACE, VMWARE_DATACENTER_NAME, VMWARE_VM_NAME, WEB_APPLICATION_NAME, WEB_APPLICATION_NAME_PATTERN, WEB_APPLICATION_TAGS, WEB_APPLICATION_TYPE
+                                                    no documentation available
+                                                  type: string
+                                                ruleMatcher:
+                                                  description: |-
+                                                    (String) Possible Values: BEGINS_WITH, EQUALS
+                                                    Possible Values: `BEGINS_WITH`, `EQUALS`
+                                                  type: string
+                                                value:
+                                                  description: |-
+                                                    (String) no documentation available
+                                                    no documentation available
+                                                  type: string
+                                              type: object
+                                            type: array
+                                        type: object
+                                      type: array
+                                  type: object
+                                type: array
+                              enabled:
+                                description: |-
+                                  (Boolean) This setting is enabled (true) or disabled (false)
+                                  This setting is enabled (`true`) or disabled (`false`)
+                                type: boolean
+                              entitySelector:
+                                description: |-
+                                  (String) Learn more about the Entity selector.
+                                  Learn more about the [Entity selector](https://dt-url.net/apientityselector).
+                                type: string
+                              type:
+                                description: |-
+                                  (String) Possible Values: DIMENSION, ME, SELECTOR
+                                  Possible Values: `DIMENSION`, `ME`, `SELECTOR`
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                type: object
+              managementPolicies:
+                default:
+                - '*'
+                description: |-
+                  THIS IS A BETA FIELD. It is on by default but can be opted out
+                  through a Crossplane feature flag.
+                  ManagementPolicies specify the array of actions Crossplane is allowed to
+                  take on the managed and external resources.
+                  This field is planned to replace the DeletionPolicy field in a future
+                  release. Currently, both could be set independently and non-default
+                  values would be honored if the feature flag is enabled. If both are
+                  custom, the DeletionPolicy field will be ignored.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223
+                  and this one: https://github.com/crossplane/crossplane/blob/444267e84783136daa93568b364a5f01228cacbe/design/one-pager-ignore-changes.md
+                items:
+                  description: |-
+                    A ManagementAction represents an action that the Crossplane controllers
+                    can take on an external resource.
+                  enum:
+                  - Observe
+                  - Create
+                  - Update
+                  - Delete
+                  - LateInitialize
+                  - '*'
+                  type: string
+                type: array
+              providerConfigRef:
+                default:
+                  name: default
+                description: |-
+                  ProviderConfigReference specifies how the provider that will be used to
+                  create, observe, update, and delete this managed resource should be
+                  configured.
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: |-
+                          Resolution specifies whether resolution of this reference is required.
+                          The default is 'Required', which means the reconcile will fail if the
+                          reference cannot be resolved. 'Optional' means this reference will be
+                          a no-op if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: |-
+                          Resolve specifies when this reference should be resolved. The default
+                          is 'IfNotPresent', which will attempt to resolve the reference only when
+                          the corresponding field is not present. Use 'Always' to resolve the
+                          reference on every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: |-
+                  WriteConnectionSecretToReference specifies the namespace and name of a
+                  Secret to which any connection details for this managed resource should
+                  be written. Connection details frequently include the endpoint, username,
+                  and password required to connect to the managed resource.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                  namespace:
+                    description: Namespace of the secret.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - forProvider
+            type: object
+            x-kubernetes-validations:
+            - message: spec.forProvider.name is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.name)
+                || (has(self.initProvider) && has(self.initProvider.name))'
+          status:
+            description: ManagementZoneV2Status defines the observed state of ManagementZoneV2.
+            properties:
+              atProvider:
+                properties:
+                  description:
+                    description: |-
+                      (String) Description
+                      Description
+                    type: string
+                  id:
+                    description: (String) The ID of this resource.
+                    type: string
+                  legacyId:
+                    description: |-
+                      (String) The ID of this setting when referred to by the Config REST API V1
+                      The ID of this setting when referred to by the Config REST API V1
+                    type: string
+                  name:
+                    description: |-
+                      if there are policies that are referencing this Management zone, they will need to be adapted to the new name!
+                      **Be careful when renaming** - if there are policies that are referencing this Management zone, they will need to be adapted to the new name!
+                    type: string
+                  rules:
+                    description: |-
+                      (Block List, Max: 1) Rules (see below for nested schema)
+                      Rules
+                    items:
+                      properties:
+                        rule:
+                          description: |-
+                            (Block Set, Min: 1) A management zone rule (see below for nested schema)
+                            A management zone rule
+                          items:
+                            properties:
+                              attributeRule:
+                                description: |-
+                                  (Block List, Max: 1) no documentation available (see below for nested schema)
+                                  no documentation available
+                                items:
+                                  properties:
+                                    attributeConditions:
+                                      description: |-
+                                        (Block List, Min: 1, Max: 1) no documentation available (see below for nested schema)
+                                        no documentation available
+                                      items:
+                                        properties:
+                                          condition:
+                                            description: |-
+                                              (Block Set, Min: 1) Attribute conditions (see below for nested schema)
+                                              Attribute conditions
+                                            items:
+                                              properties:
+                                                caseSensitive:
+                                                  description: |-
+                                                    (Boolean) Case sensitive
+                                                    Case sensitive
+                                                  type: boolean
+                                                dynamicKey:
+                                                  description: |-
+                                                    (String) Dynamic key
+                                                    Dynamic key
+                                                  type: string
+                                                dynamicKeySource:
+                                                  description: |-
+                                                    (String) Key source
+                                                    Key source
+                                                  type: string
+                                                entityId:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                enumValue:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                integerValue:
+                                                  description: |-
+                                                    (Number) Value
+                                                    Value
+                                                  type: number
+                                                key:
+                                                  description: |-
+                                                    (String) Possible Values: APPMON_SERVER_NAME, APPMON_SYSTEM_PROFILE_NAME, AWS_ACCOUNT_ID, AWS_ACCOUNT_NAME, AWS_APPLICATION_LOAD_BALANCER_NAME, AWS_APPLICATION_LOAD_BALANCER_TAGS, AWS_AUTO_SCALING_GROUP_NAME, AWS_AUTO_SCALING_GROUP_TAGS, AWS_AVAILABILITY_ZONE_NAME, AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS, AWS_CLASSIC_LOAD_BALANCER_NAME, AWS_CLASSIC_LOAD_BALANCER_TAGS, AWS_NETWORK_LOAD_BALANCER_NAME, AWS_NETWORK_LOAD_BALANCER_TAGS, AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME, AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT, AWS_RELATIONAL_DATABASE_SERVICE_ENGINE, AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS, AWS_RELATIONAL_DATABASE_SERVICE_NAME, AWS_RELATIONAL_DATABASE_SERVICE_PORT, AWS_RELATIONAL_DATABASE_SERVICE_TAGS, AZURE_ENTITY_NAME, AZURE_ENTITY_TAGS, AZURE_MGMT_GROUP_NAME, AZURE_MGMT_GROUP_UUID, AZURE_REGION_NAME, AZURE_SCALE_SET_NAME, AZURE_SUBSCRIPTION_NAME, AZURE_SUBSCRIPTION_UUID, AZURE_TENANT_NAME, AZURE_TENANT_UUID, AZURE_VM_NAME, BROWSER_MONITOR_NAME, BROWSER_MONITOR_TAGS, CLOUD_APPLICATION_LABELS, CLOUD_APPLICATION_NAME, CLOUD_APPLICATION_NAMESPACE_LABELS, CLOUD_APPLICATION_NAMESPACE_NAME, CLOUD_FOUNDRY_FOUNDATION_NAME, CLOUD_FOUNDRY_ORG_NAME, CUSTOM_APPLICATION_NAME, CUSTOM_APPLICATION_PLATFORM, CUSTOM_APPLICATION_TAGS, CUSTOM_APPLICATION_TYPE, CUSTOM_DEVICE_DNS_ADDRESS, CUSTOM_DEVICE_GROUP_NAME, CUSTOM_DEVICE_GROUP_TAGS, CUSTOM_DEVICE_IP_ADDRESS, CUSTOM_DEVICE_METADATA, CUSTOM_DEVICE_NAME, CUSTOM_DEVICE_PORT, CUSTOM_DEVICE_TAGS, CUSTOM_DEVICE_TECHNOLOGY, DATA_CENTER_SERVICE_DECODER_TYPE, DATA_CENTER_SERVICE_IP_ADDRESS, DATA_CENTER_SERVICE_METADATA, DATA_CENTER_SERVICE_NAME, DATA_CENTER_SERVICE_PORT, DATA_CENTER_SERVICE_TAGS, DOCKER_CONTAINER_NAME, DOCKER_FULL_IMAGE_NAME, DOCKER_IMAGE_VERSION, EC2_INSTANCE_AMI_ID, EC2_INSTANCE_AWS_INSTANCE_TYPE, EC2_INSTANCE_AWS_SECURITY_GROUP, EC2_INSTANCE_BEANSTALK_ENV_NAME, EC2_INSTANCE_ID, EC2_INSTANCE_NAME, EC2_INSTANCE_PRIVATE_HOST_NAME, EC2_INSTANCE_PUBLIC_HOST_NAME, EC2_INSTANCE_TAGS, ENTERPRISE_APPLICATION_DECODER_TYPE, ENTERPRISE_APPLICATION_IP_ADDRESS, ENTERPRISE_APPLICATION_METADATA, ENTERPRISE_APPLICATION_NAME, ENTERPRISE_APPLICATION_PORT, ENTERPRISE_APPLICATION_TAGS, ESXI_HOST_CLUSTER_NAME, ESXI_HOST_HARDWARE_MODEL, ESXI_HOST_HARDWARE_VENDOR, ESXI_HOST_NAME, ESXI_HOST_PRODUCT_NAME, ESXI_HOST_PRODUCT_VERSION, ESXI_HOST_TAGS, EXTERNAL_MONITOR_ENGINE_DESCRIPTION, EXTERNAL_MONITOR_ENGINE_NAME, EXTERNAL_MONITOR_ENGINE_TYPE, EXTERNAL_MONITOR_NAME, EXTERNAL_MONITOR_TAGS, GEOLOCATION_SITE_NAME, GOOGLE_CLOUD_PLATFORM_ZONE_NAME, GOOGLE_COMPUTE_INSTANCE_ID, GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE, GOOGLE_COMPUTE_INSTANCE_NAME, GOOGLE_COMPUTE_INSTANCE_PROJECT, GOOGLE_COMPUTE_INSTANCE_PROJECT_ID, GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES, HOST_AIX_LOGICAL_CPU_COUNT, HOST_AIX_SIMULTANEOUS_THREADS, HOST_AIX_VIRTUAL_CPU_COUNT, HOST_ARCHITECTURE, HOST_AWS_NAME_TAG, HOST_AZURE_COMPUTE_MODE, HOST_AZURE_SKU, HOST_AZURE_WEB_APPLICATION_HOST_NAMES, HOST_AZURE_WEB_APPLICATION_SITE_NAMES, HOST_BITNESS, HOST_BOSH_AVAILABILITY_ZONE, HOST_BOSH_DEPLOYMENT_ID, HOST_BOSH_INSTANCE_ID, HOST_BOSH_INSTANCE_NAME, HOST_BOSH_NAME, HOST_BOSH_STEMCELL_VERSION, HOST_CLOUD_TYPE, HOST_CPU_CORES, HOST_CUSTOM_METADATA, HOST_DETECTED_NAME, HOST_GROUP_ID, HOST_GROUP_NAME, HOST_HYPERVISOR_TYPE, HOST_IP_ADDRESS, HOST_KUBERNETES_LABELS, HOST_LOGICAL_CPU_CORES, HOST_NAME, HOST_ONEAGENT_CUSTOM_HOST_NAME, HOST_OS_TYPE, HOST_OS_VERSION, HOST_PAAS_MEMORY_LIMIT, HOST_PAAS_TYPE, HOST_TAGS, HOST_TECHNOLOGY, HTTP_MONITOR_NAME, HTTP_MONITOR_TAGS, KUBERNETES_CLUSTER_NAME, KUBERNETES_NODE_NAME, KUBERNETES_SERVICE_NAME, MOBILE_APPLICATION_NAME, MOBILE_APPLICATION_PLATFORM, MOBILE_APPLICATION_TAGS, NAME_OF_COMPUTE_NODE, OPENSTACK_ACCOUNT_NAME, OPENSTACK_ACCOUNT_PROJECT_NAME, OPENSTACK_AVAILABILITY_ZONE_NAME, OPENSTACK_PROJECT_NAME, OPENSTACK_REGION_NAME, OPENSTACK_VM_INSTANCE_TYPE, OPENSTACK_VM_NAME, OPENSTACK_VM_SECURITY_GROUP, PROCESS_GROUP_AZURE_HOST_NAME, PROCESS_GROUP_AZURE_SITE_NAME, PROCESS_GROUP_CUSTOM_METADATA, PROCESS_GROUP_DETECTED_NAME, PROCESS_GROUP_ID, PROCESS_GROUP_LISTEN_PORT, PROCESS_GROUP_NAME, PROCESS_GROUP_PREDEFINED_METADATA, PROCESS_GROUP_TAGS, PROCESS_GROUP_TECHNOLOGY, PROCESS_GROUP_TECHNOLOGY_EDITION, PROCESS_GROUP_TECHNOLOGY_VERSION, QUEUE_NAME, QUEUE_TECHNOLOGY, QUEUE_VENDOR, SERVICE_AKKA_ACTOR_SYSTEM, SERVICE_CTG_SERVICE_NAME, SERVICE_DATABASE_HOST_NAME, SERVICE_DATABASE_NAME, SERVICE_DATABASE_TOPOLOGY, SERVICE_DATABASE_VENDOR, SERVICE_DETECTED_NAME, SERVICE_ESB_APPLICATION_NAME, SERVICE_IBM_CTG_GATEWAY_URL, SERVICE_MESSAGING_LISTENER_CLASS_NAME, SERVICE_NAME, SERVICE_PORT, SERVICE_PUBLIC_DOMAIN_NAME, SERVICE_REMOTE_ENDPOINT, SERVICE_REMOTE_SERVICE_NAME, SERVICE_TAGS, SERVICE_TECHNOLOGY, SERVICE_TECHNOLOGY_EDITION, SERVICE_TECHNOLOGY_VERSION, SERVICE_TOPOLOGY, SERVICE_TYPE, SERVICE_WEB_APPLICATION_ID, SERVICE_WEB_CONTEXT_ROOT, SERVICE_WEB_SERVER_ENDPOINT, SERVICE_WEB_SERVER_NAME, SERVICE_WEB_SERVICE_NAME, SERVICE_WEB_SERVICE_NAMESPACE, VMWARE_DATACENTER_NAME, VMWARE_VM_NAME, WEB_APPLICATION_NAME, WEB_APPLICATION_NAME_PATTERN, WEB_APPLICATION_TAGS, WEB_APPLICATION_TYPE
+                                                    Possible Values: `APPMON_SERVER_NAME`, `APPMON_SYSTEM_PROFILE_NAME`, `AWS_ACCOUNT_ID`, `AWS_ACCOUNT_NAME`, `AWS_APPLICATION_LOAD_BALANCER_NAME`, `AWS_APPLICATION_LOAD_BALANCER_TAGS`, `AWS_AUTO_SCALING_GROUP_NAME`, `AWS_AUTO_SCALING_GROUP_TAGS`, `AWS_AVAILABILITY_ZONE_NAME`, `AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS`, `AWS_CLASSIC_LOAD_BALANCER_NAME`, `AWS_CLASSIC_LOAD_BALANCER_TAGS`, `AWS_NETWORK_LOAD_BALANCER_NAME`, `AWS_NETWORK_LOAD_BALANCER_TAGS`, `AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME`, `AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT`, `AWS_RELATIONAL_DATABASE_SERVICE_ENGINE`, `AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS`, `AWS_RELATIONAL_DATABASE_SERVICE_NAME`, `AWS_RELATIONAL_DATABASE_SERVICE_PORT`, `AWS_RELATIONAL_DATABASE_SERVICE_TAGS`, `AZURE_ENTITY_NAME`, `AZURE_ENTITY_TAGS`, `AZURE_MGMT_GROUP_NAME`, `AZURE_MGMT_GROUP_UUID`, `AZURE_REGION_NAME`, `AZURE_SCALE_SET_NAME`, `AZURE_SUBSCRIPTION_NAME`, `AZURE_SUBSCRIPTION_UUID`, `AZURE_TENANT_NAME`, `AZURE_TENANT_UUID`, `AZURE_VM_NAME`, `BROWSER_MONITOR_NAME`, `BROWSER_MONITOR_TAGS`, `CLOUD_APPLICATION_LABELS`, `CLOUD_APPLICATION_NAME`, `CLOUD_APPLICATION_NAMESPACE_LABELS`, `CLOUD_APPLICATION_NAMESPACE_NAME`, `CLOUD_FOUNDRY_FOUNDATION_NAME`, `CLOUD_FOUNDRY_ORG_NAME`, `CUSTOM_APPLICATION_NAME`, `CUSTOM_APPLICATION_PLATFORM`, `CUSTOM_APPLICATION_TAGS`, `CUSTOM_APPLICATION_TYPE`, `CUSTOM_DEVICE_DNS_ADDRESS`, `CUSTOM_DEVICE_GROUP_NAME`, `CUSTOM_DEVICE_GROUP_TAGS`, `CUSTOM_DEVICE_IP_ADDRESS`, `CUSTOM_DEVICE_METADATA`, `CUSTOM_DEVICE_NAME`, `CUSTOM_DEVICE_PORT`, `CUSTOM_DEVICE_TAGS`, `CUSTOM_DEVICE_TECHNOLOGY`, `DATA_CENTER_SERVICE_DECODER_TYPE`, `DATA_CENTER_SERVICE_IP_ADDRESS`, `DATA_CENTER_SERVICE_METADATA`, `DATA_CENTER_SERVICE_NAME`, `DATA_CENTER_SERVICE_PORT`, `DATA_CENTER_SERVICE_TAGS`, `DOCKER_CONTAINER_NAME`, `DOCKER_FULL_IMAGE_NAME`, `DOCKER_IMAGE_VERSION`, `EC2_INSTANCE_AMI_ID`, `EC2_INSTANCE_AWS_INSTANCE_TYPE`, `EC2_INSTANCE_AWS_SECURITY_GROUP`, `EC2_INSTANCE_BEANSTALK_ENV_NAME`, `EC2_INSTANCE_ID`, `EC2_INSTANCE_NAME`, `EC2_INSTANCE_PRIVATE_HOST_NAME`, `EC2_INSTANCE_PUBLIC_HOST_NAME`, `EC2_INSTANCE_TAGS`, `ENTERPRISE_APPLICATION_DECODER_TYPE`, `ENTERPRISE_APPLICATION_IP_ADDRESS`, `ENTERPRISE_APPLICATION_METADATA`, `ENTERPRISE_APPLICATION_NAME`, `ENTERPRISE_APPLICATION_PORT`, `ENTERPRISE_APPLICATION_TAGS`, `ESXI_HOST_CLUSTER_NAME`, `ESXI_HOST_HARDWARE_MODEL`, `ESXI_HOST_HARDWARE_VENDOR`, `ESXI_HOST_NAME`, `ESXI_HOST_PRODUCT_NAME`, `ESXI_HOST_PRODUCT_VERSION`, `ESXI_HOST_TAGS`, `EXTERNAL_MONITOR_ENGINE_DESCRIPTION`, `EXTERNAL_MONITOR_ENGINE_NAME`, `EXTERNAL_MONITOR_ENGINE_TYPE`, `EXTERNAL_MONITOR_NAME`, `EXTERNAL_MONITOR_TAGS`, `GEOLOCATION_SITE_NAME`, `GOOGLE_CLOUD_PLATFORM_ZONE_NAME`, `GOOGLE_COMPUTE_INSTANCE_ID`, `GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE`, `GOOGLE_COMPUTE_INSTANCE_NAME`, `GOOGLE_COMPUTE_INSTANCE_PROJECT`, `GOOGLE_COMPUTE_INSTANCE_PROJECT_ID`, `GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES`, `HOST_AIX_LOGICAL_CPU_COUNT`, `HOST_AIX_SIMULTANEOUS_THREADS`, `HOST_AIX_VIRTUAL_CPU_COUNT`, `HOST_ARCHITECTURE`, `HOST_AWS_NAME_TAG`, `HOST_AZURE_COMPUTE_MODE`, `HOST_AZURE_SKU`, `HOST_AZURE_WEB_APPLICATION_HOST_NAMES`, `HOST_AZURE_WEB_APPLICATION_SITE_NAMES`, `HOST_BITNESS`, `HOST_BOSH_AVAILABILITY_ZONE`, `HOST_BOSH_DEPLOYMENT_ID`, `HOST_BOSH_INSTANCE_ID`, `HOST_BOSH_INSTANCE_NAME`, `HOST_BOSH_NAME`, `HOST_BOSH_STEMCELL_VERSION`, `HOST_CLOUD_TYPE`, `HOST_CPU_CORES`, `HOST_CUSTOM_METADATA`, `HOST_DETECTED_NAME`, `HOST_GROUP_ID`, `HOST_GROUP_NAME`, `HOST_HYPERVISOR_TYPE`, `HOST_IP_ADDRESS`, `HOST_KUBERNETES_LABELS`, `HOST_LOGICAL_CPU_CORES`, `HOST_NAME`, `HOST_ONEAGENT_CUSTOM_HOST_NAME`, `HOST_OS_TYPE`, `HOST_OS_VERSION`, `HOST_PAAS_MEMORY_LIMIT`, `HOST_PAAS_TYPE`, `HOST_TAGS`, `HOST_TECHNOLOGY`, `HTTP_MONITOR_NAME`, `HTTP_MONITOR_TAGS`, `KUBERNETES_CLUSTER_NAME`, `KUBERNETES_NODE_NAME`, `KUBERNETES_SERVICE_NAME`, `MOBILE_APPLICATION_NAME`, `MOBILE_APPLICATION_PLATFORM`, `MOBILE_APPLICATION_TAGS`, `NAME_OF_COMPUTE_NODE`, `OPENSTACK_ACCOUNT_NAME`, `OPENSTACK_ACCOUNT_PROJECT_NAME`, `OPENSTACK_AVAILABILITY_ZONE_NAME`, `OPENSTACK_PROJECT_NAME`, `OPENSTACK_REGION_NAME`, `OPENSTACK_VM_INSTANCE_TYPE`, `OPENSTACK_VM_NAME`, `OPENSTACK_VM_SECURITY_GROUP`, `PROCESS_GROUP_AZURE_HOST_NAME`, `PROCESS_GROUP_AZURE_SITE_NAME`, `PROCESS_GROUP_CUSTOM_METADATA`, `PROCESS_GROUP_DETECTED_NAME`, `PROCESS_GROUP_ID`, `PROCESS_GROUP_LISTEN_PORT`, `PROCESS_GROUP_NAME`, `PROCESS_GROUP_PREDEFINED_METADATA`, `PROCESS_GROUP_TAGS`, `PROCESS_GROUP_TECHNOLOGY`, `PROCESS_GROUP_TECHNOLOGY_EDITION`, `PROCESS_GROUP_TECHNOLOGY_VERSION`, `QUEUE_NAME`, `QUEUE_TECHNOLOGY`, `QUEUE_VENDOR`, `SERVICE_AKKA_ACTOR_SYSTEM`, `SERVICE_CTG_SERVICE_NAME`, `SERVICE_DATABASE_HOST_NAME`, `SERVICE_DATABASE_NAME`, `SERVICE_DATABASE_TOPOLOGY`, `SERVICE_DATABASE_VENDOR`, `SERVICE_DETECTED_NAME`, `SERVICE_ESB_APPLICATION_NAME`, `SERVICE_IBM_CTG_GATEWAY_URL`, `SERVICE_MESSAGING_LISTENER_CLASS_NAME`, `SERVICE_NAME`, `SERVICE_PORT`, `SERVICE_PUBLIC_DOMAIN_NAME`, `SERVICE_REMOTE_ENDPOINT`, `SERVICE_REMOTE_SERVICE_NAME`, `SERVICE_TAGS`, `SERVICE_TECHNOLOGY`, `SERVICE_TECHNOLOGY_EDITION`, `SERVICE_TECHNOLOGY_VERSION`, `SERVICE_TOPOLOGY`, `SERVICE_TYPE`, `SERVICE_WEB_APPLICATION_ID`, `SERVICE_WEB_CONTEXT_ROOT`, `SERVICE_WEB_SERVER_ENDPOINT`, `SERVICE_WEB_SERVER_NAME`, `SERVICE_WEB_SERVICE_NAME`, `SERVICE_WEB_SERVICE_NAMESPACE`, `VMWARE_DATACENTER_NAME`, `VMWARE_VM_NAME`, `WEB_APPLICATION_NAME`, `WEB_APPLICATION_NAME_PATTERN`, `WEB_APPLICATION_TAGS`, `WEB_APPLICATION_TYPE`
+                                                  type: string
+                                                operator:
+                                                  description: |-
+                                                    (String) Possible Values: BEGINS_WITH, CONTAINS, ENDS_WITH, EQUALS, EXISTS, GREATER_THAN, GREATER_THAN_OR_EQUAL, IS_IP_IN_RANGE, LOWER_THAN, LOWER_THAN_OR_EQUAL, NOT_BEGINS_WITH, NOT_CONTAINS, NOT_ENDS_WITH, NOT_EQUALS, NOT_EXISTS, NOT_GREATER_THAN, NOT_GREATER_THAN_OR_EQUAL, NOT_IS_IP_IN_RANGE, NOT_LOWER_THAN, NOT_LOWER_THAN_OR_EQUAL, NOT_REGEX_MATCHES, NOT_TAG_KEY_EQUALS, REGEX_MATCHES, TAG_KEY_EQUALS
+                                                    Possible Values: `BEGINS_WITH`, `CONTAINS`, `ENDS_WITH`, `EQUALS`, `EXISTS`, `GREATER_THAN`, `GREATER_THAN_OR_EQUAL`, `IS_IP_IN_RANGE`, `LOWER_THAN`, `LOWER_THAN_OR_EQUAL`, `NOT_BEGINS_WITH`, `NOT_CONTAINS`, `NOT_ENDS_WITH`, `NOT_EQUALS`, `NOT_EXISTS`, `NOT_GREATER_THAN`, `NOT_GREATER_THAN_OR_EQUAL`, `NOT_IS_IP_IN_RANGE`, `NOT_LOWER_THAN`, `NOT_LOWER_THAN_OR_EQUAL`, `NOT_REGEX_MATCHES`, `NOT_TAG_KEY_EQUALS`, `REGEX_MATCHES`, `TAG_KEY_EQUALS`
+                                                  type: string
+                                                stringValue:
+                                                  description: |-
+                                                    (String) Value
+                                                    Value
+                                                  type: string
+                                                tag:
+                                                  description: |-
+                                                    (String) Format: [CONTEXT]tagKey:tagValue
+                                                    Format: `[CONTEXT]tagKey:tagValue`
+                                                  type: string
+                                              type: object
+                                            type: array
+                                        type: object
+                                      type: array
+                                    azureToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to process groups connected to matching Azure entities
+                                        Apply to process groups connected to matching Azure entities
+                                      type: boolean
+                                    azureToServicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to services provided by matching Azure entities
+                                        Apply to services provided by matching Azure entities
+                                      type: boolean
+                                    customDeviceGroupToCustomDevicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to custom devices in a custom device group
+                                        Apply to custom devices in a custom device group
+                                      type: boolean
+                                    entityType:
+                                      description: |-
+                                        (String) Possible Values: APPMON_SERVER, APPMON_SYSTEM_PROFILE, AWS_ACCOUNT, AWS_APPLICATION_LOAD_BALANCER, AWS_AUTO_SCALING_GROUP, AWS_CLASSIC_LOAD_BALANCER, AWS_NETWORK_LOAD_BALANCER, AWS_RELATIONAL_DATABASE_SERVICE, AZURE, BROWSER_MONITOR, CLOUD_APPLICATION, CLOUD_APPLICATION_NAMESPACE, CLOUD_FOUNDRY_FOUNDATION, CUSTOM_APPLICATION, CUSTOM_DEVICE, CUSTOM_DEVICE_GROUP, DATA_CENTER_SERVICE, ENTERPRISE_APPLICATION, ESXI_HOST, EXTERNAL_MONITOR, HOST, HOST_GROUP, HTTP_MONITOR, KUBERNETES_CLUSTER, KUBERNETES_SERVICE, MOBILE_APPLICATION, OPENSTACK_ACCOUNT, PROCESS_GROUP, QUEUE, SERVICE, WEB_APPLICATION
+                                        Possible Values: `APPMON_SERVER`, `APPMON_SYSTEM_PROFILE`, `AWS_ACCOUNT`, `AWS_APPLICATION_LOAD_BALANCER`, `AWS_AUTO_SCALING_GROUP`, `AWS_CLASSIC_LOAD_BALANCER`, `AWS_NETWORK_LOAD_BALANCER`, `AWS_RELATIONAL_DATABASE_SERVICE`, `AZURE`, `BROWSER_MONITOR`, `CLOUD_APPLICATION`, `CLOUD_APPLICATION_NAMESPACE`, `CLOUD_FOUNDRY_FOUNDATION`, `CUSTOM_APPLICATION`, `CUSTOM_DEVICE`, `CUSTOM_DEVICE_GROUP`, `DATA_CENTER_SERVICE`, `ENTERPRISE_APPLICATION`, `ESXI_HOST`, `EXTERNAL_MONITOR`, `HOST`, `HOST_GROUP`, `HTTP_MONITOR`, `KUBERNETES_CLUSTER`, `KUBERNETES_SERVICE`, `MOBILE_APPLICATION`, `OPENSTACK_ACCOUNT`, `PROCESS_GROUP`, `QUEUE`, `SERVICE`, `WEB_APPLICATION`
+                                      type: string
+                                    hostToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to processes running on matching hosts. entity_type must be set to HOST
+                                        Apply to processes running on matching hosts. `entity_type` must be set to `HOST`
+                                      type: boolean
+                                    pgToHostPropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying hosts of matching process groups. entity_type must be set to PROCESS_GROUP
+                                        Apply to underlying hosts of matching process groups. `entity_type` must be set to `PROCESS_GROUP`
+                                      type: boolean
+                                    pgToServicePropagation:
+                                      description: |-
+                                        (Boolean) Apply to all services provided by the process groups. entity_type must be set to PROCESS_GROUP
+                                        Apply to all services provided by the process groups. `entity_type` must be set to `PROCESS_GROUP`
+                                      type: boolean
+                                    serviceToHostPropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying hosts of matching services. entity_type must be set to SERVICE
+                                        Apply to underlying hosts of matching services. `entity_type` must be set to `SERVICE`
+                                      type: boolean
+                                    serviceToPgpropagation:
+                                      description: |-
+                                        (Boolean) Apply to underlying process groups of matching services. entity_type must be set to SERVICE
+                                        Apply to underlying process groups of matching services. `entity_type` must be set to `SERVICE`
+                                      type: boolean
+                                  type: object
+                                type: array
+                              dimensionRule:
+                                description: |-
+                                  (Block List, Max: 1) no documentation available (see below for nested schema)
+                                  no documentation available
+                                items:
+                                  properties:
+                                    appliesTo:
+                                      description: |-
+                                        (String) Possible Values: ANY, LOG, METRIC
+                                        Possible Values: `ANY`, `LOG`, `METRIC`
+                                      type: string
+                                    dimensionConditions:
+                                      description: |-
+                                        (Block List, Max: 1) Conditions (see below for nested schema)
+                                        Conditions
+                                      items:
+                                        properties:
+                                          condition:
+                                            description: |-
+                                              (Block Set, Min: 1) Attribute conditions (see below for nested schema)
+                                              Dimension conditions
+                                            items:
+                                              properties:
+                                                conditionType:
+                                                  description: |-
+                                                    (String) Possible Values: DIMENSION, LOG_FILE_NAME, METRIC_KEY
+                                                    Possible Values: `DIMENSION`, `LOG_FILE_NAME`, `METRIC_KEY`
+                                                  type: string
+                                                key:
+                                                  description: |-
+                                                    (String) Possible Values: APPMON_SERVER_NAME, APPMON_SYSTEM_PROFILE_NAME, AWS_ACCOUNT_ID, AWS_ACCOUNT_NAME, AWS_APPLICATION_LOAD_BALANCER_NAME, AWS_APPLICATION_LOAD_BALANCER_TAGS, AWS_AUTO_SCALING_GROUP_NAME, AWS_AUTO_SCALING_GROUP_TAGS, AWS_AVAILABILITY_ZONE_NAME, AWS_CLASSIC_LOAD_BALANCER_FRONTEND_PORTS, AWS_CLASSIC_LOAD_BALANCER_NAME, AWS_CLASSIC_LOAD_BALANCER_TAGS, AWS_NETWORK_LOAD_BALANCER_NAME, AWS_NETWORK_LOAD_BALANCER_TAGS, AWS_RELATIONAL_DATABASE_SERVICE_DB_NAME, AWS_RELATIONAL_DATABASE_SERVICE_ENDPOINT, AWS_RELATIONAL_DATABASE_SERVICE_ENGINE, AWS_RELATIONAL_DATABASE_SERVICE_INSTANCE_CLASS, AWS_RELATIONAL_DATABASE_SERVICE_NAME, AWS_RELATIONAL_DATABASE_SERVICE_PORT, AWS_RELATIONAL_DATABASE_SERVICE_TAGS, AZURE_ENTITY_NAME, AZURE_ENTITY_TAGS, AZURE_MGMT_GROUP_NAME, AZURE_MGMT_GROUP_UUID, AZURE_REGION_NAME, AZURE_SCALE_SET_NAME, AZURE_SUBSCRIPTION_NAME, AZURE_SUBSCRIPTION_UUID, AZURE_TENANT_NAME, AZURE_TENANT_UUID, AZURE_VM_NAME, BROWSER_MONITOR_NAME, BROWSER_MONITOR_TAGS, CLOUD_APPLICATION_LABELS, CLOUD_APPLICATION_NAME, CLOUD_APPLICATION_NAMESPACE_LABELS, CLOUD_APPLICATION_NAMESPACE_NAME, CLOUD_FOUNDRY_FOUNDATION_NAME, CLOUD_FOUNDRY_ORG_NAME, CUSTOM_APPLICATION_NAME, CUSTOM_APPLICATION_PLATFORM, CUSTOM_APPLICATION_TAGS, CUSTOM_APPLICATION_TYPE, CUSTOM_DEVICE_DNS_ADDRESS, CUSTOM_DEVICE_GROUP_NAME, CUSTOM_DEVICE_GROUP_TAGS, CUSTOM_DEVICE_IP_ADDRESS, CUSTOM_DEVICE_METADATA, CUSTOM_DEVICE_NAME, CUSTOM_DEVICE_PORT, CUSTOM_DEVICE_TAGS, CUSTOM_DEVICE_TECHNOLOGY, DATA_CENTER_SERVICE_DECODER_TYPE, DATA_CENTER_SERVICE_IP_ADDRESS, DATA_CENTER_SERVICE_METADATA, DATA_CENTER_SERVICE_NAME, DATA_CENTER_SERVICE_PORT, DATA_CENTER_SERVICE_TAGS, DOCKER_CONTAINER_NAME, DOCKER_FULL_IMAGE_NAME, DOCKER_IMAGE_VERSION, EC2_INSTANCE_AMI_ID, EC2_INSTANCE_AWS_INSTANCE_TYPE, EC2_INSTANCE_AWS_SECURITY_GROUP, EC2_INSTANCE_BEANSTALK_ENV_NAME, EC2_INSTANCE_ID, EC2_INSTANCE_NAME, EC2_INSTANCE_PRIVATE_HOST_NAME, EC2_INSTANCE_PUBLIC_HOST_NAME, EC2_INSTANCE_TAGS, ENTERPRISE_APPLICATION_DECODER_TYPE, ENTERPRISE_APPLICATION_IP_ADDRESS, ENTERPRISE_APPLICATION_METADATA, ENTERPRISE_APPLICATION_NAME, ENTERPRISE_APPLICATION_PORT, ENTERPRISE_APPLICATION_TAGS, ESXI_HOST_CLUSTER_NAME, ESXI_HOST_HARDWARE_MODEL, ESXI_HOST_HARDWARE_VENDOR, ESXI_HOST_NAME, ESXI_HOST_PRODUCT_NAME, ESXI_HOST_PRODUCT_VERSION, ESXI_HOST_TAGS, EXTERNAL_MONITOR_ENGINE_DESCRIPTION, EXTERNAL_MONITOR_ENGINE_NAME, EXTERNAL_MONITOR_ENGINE_TYPE, EXTERNAL_MONITOR_NAME, EXTERNAL_MONITOR_TAGS, GEOLOCATION_SITE_NAME, GOOGLE_CLOUD_PLATFORM_ZONE_NAME, GOOGLE_COMPUTE_INSTANCE_ID, GOOGLE_COMPUTE_INSTANCE_MACHINE_TYPE, GOOGLE_COMPUTE_INSTANCE_NAME, GOOGLE_COMPUTE_INSTANCE_PROJECT, GOOGLE_COMPUTE_INSTANCE_PROJECT_ID, GOOGLE_COMPUTE_INSTANCE_PUBLIC_IP_ADDRESSES, HOST_AIX_LOGICAL_CPU_COUNT, HOST_AIX_SIMULTANEOUS_THREADS, HOST_AIX_VIRTUAL_CPU_COUNT, HOST_ARCHITECTURE, HOST_AWS_NAME_TAG, HOST_AZURE_COMPUTE_MODE, HOST_AZURE_SKU, HOST_AZURE_WEB_APPLICATION_HOST_NAMES, HOST_AZURE_WEB_APPLICATION_SITE_NAMES, HOST_BITNESS, HOST_BOSH_AVAILABILITY_ZONE, HOST_BOSH_DEPLOYMENT_ID, HOST_BOSH_INSTANCE_ID, HOST_BOSH_INSTANCE_NAME, HOST_BOSH_NAME, HOST_BOSH_STEMCELL_VERSION, HOST_CLOUD_TYPE, HOST_CPU_CORES, HOST_CUSTOM_METADATA, HOST_DETECTED_NAME, HOST_GROUP_ID, HOST_GROUP_NAME, HOST_HYPERVISOR_TYPE, HOST_IP_ADDRESS, HOST_KUBERNETES_LABELS, HOST_LOGICAL_CPU_CORES, HOST_NAME, HOST_ONEAGENT_CUSTOM_HOST_NAME, HOST_OS_TYPE, HOST_OS_VERSION, HOST_PAAS_MEMORY_LIMIT, HOST_PAAS_TYPE, HOST_TAGS, HOST_TECHNOLOGY, HTTP_MONITOR_NAME, HTTP_MONITOR_TAGS, KUBERNETES_CLUSTER_NAME, KUBERNETES_NODE_NAME, KUBERNETES_SERVICE_NAME, MOBILE_APPLICATION_NAME, MOBILE_APPLICATION_PLATFORM, MOBILE_APPLICATION_TAGS, NAME_OF_COMPUTE_NODE, OPENSTACK_ACCOUNT_NAME, OPENSTACK_ACCOUNT_PROJECT_NAME, OPENSTACK_AVAILABILITY_ZONE_NAME, OPENSTACK_PROJECT_NAME, OPENSTACK_REGION_NAME, OPENSTACK_VM_INSTANCE_TYPE, OPENSTACK_VM_NAME, OPENSTACK_VM_SECURITY_GROUP, PROCESS_GROUP_AZURE_HOST_NAME, PROCESS_GROUP_AZURE_SITE_NAME, PROCESS_GROUP_CUSTOM_METADATA, PROCESS_GROUP_DETECTED_NAME, PROCESS_GROUP_ID, PROCESS_GROUP_LISTEN_PORT, PROCESS_GROUP_NAME, PROCESS_GROUP_PREDEFINED_METADATA, PROCESS_GROUP_TAGS, PROCESS_GROUP_TECHNOLOGY, PROCESS_GROUP_TECHNOLOGY_EDITION, PROCESS_GROUP_TECHNOLOGY_VERSION, QUEUE_NAME, QUEUE_TECHNOLOGY, QUEUE_VENDOR, SERVICE_AKKA_ACTOR_SYSTEM, SERVICE_CTG_SERVICE_NAME, SERVICE_DATABASE_HOST_NAME, SERVICE_DATABASE_NAME, SERVICE_DATABASE_TOPOLOGY, SERVICE_DATABASE_VENDOR, SERVICE_DETECTED_NAME, SERVICE_ESB_APPLICATION_NAME, SERVICE_IBM_CTG_GATEWAY_URL, SERVICE_MESSAGING_LISTENER_CLASS_NAME, SERVICE_NAME, SERVICE_PORT, SERVICE_PUBLIC_DOMAIN_NAME, SERVICE_REMOTE_ENDPOINT, SERVICE_REMOTE_SERVICE_NAME, SERVICE_TAGS, SERVICE_TECHNOLOGY, SERVICE_TECHNOLOGY_EDITION, SERVICE_TECHNOLOGY_VERSION, SERVICE_TOPOLOGY, SERVICE_TYPE, SERVICE_WEB_APPLICATION_ID, SERVICE_WEB_CONTEXT_ROOT, SERVICE_WEB_SERVER_ENDPOINT, SERVICE_WEB_SERVER_NAME, SERVICE_WEB_SERVICE_NAME, SERVICE_WEB_SERVICE_NAMESPACE, VMWARE_DATACENTER_NAME, VMWARE_VM_NAME, WEB_APPLICATION_NAME, WEB_APPLICATION_NAME_PATTERN, WEB_APPLICATION_TAGS, WEB_APPLICATION_TYPE
+                                                    no documentation available
+                                                  type: string
+                                                ruleMatcher:
+                                                  description: |-
+                                                    (String) Possible Values: BEGINS_WITH, EQUALS
+                                                    Possible Values: `BEGINS_WITH`, `EQUALS`
+                                                  type: string
+                                                value:
+                                                  description: |-
+                                                    (String) no documentation available
+                                                    no documentation available
+                                                  type: string
+                                              type: object
+                                            type: array
+                                        type: object
+                                      type: array
+                                  type: object
+                                type: array
+                              enabled:
+                                description: |-
+                                  (Boolean) This setting is enabled (true) or disabled (false)
+                                  This setting is enabled (`true`) or disabled (`false`)
+                                type: boolean
+                              entitySelector:
+                                description: |-
+                                  (String) Learn more about the Entity selector.
+                                  Learn more about the [Entity selector](https://dt-url.net/apientityselector).
+                                type: string
+                              type:
+                                description: |-
+                                  (String) Possible Values: DIMENSION, ME, SELECTOR
+                                  Possible Values: `DIMENSION`, `ME`, `SELECTOR`
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        LastTransitionTime is the last time this condition transitioned from one
+                        status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        A Message containing details about this condition's last transition from
+                        one status to another, if any.
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        ObservedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      type: integer
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: |-
+                        Type of this condition. At most one of each condition type may apply to
+                        a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              observedGeneration:
+                description: |-
+                  ObservedGeneration is the latest metadata.generation
+                  which resulted in either a ready state, or stalled due to error
+                  it can not recover from without human intervention.
+                format: int64
+                type: integer
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

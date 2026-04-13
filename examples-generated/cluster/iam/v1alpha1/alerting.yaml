@@ -1,0 +1,52 @@
+apiVersion: iam.dynatrace.crossplane.io/v1alpha1
+kind: Alerting
+metadata:
+  annotations:
+    meta.upbound.io/example-id: iam/v1alpha1/alerting
+  labels:
+    testing.upbound.io/example-name: '#name#'
+  name: '#name#'
+spec:
+  forProvider:
+    managementZoneSelector:
+      matchLabels:
+        testing.upbound.io/example-name: example
+    name: '#name#'
+    rules:
+    - rule:
+      - delayInMinutes: 0
+        includeMode: INCLUDE_ALL
+        severityLevel: AVAILABILITY
+        tags:
+        - EnvironmentA:production
+        - Team:test
+      - delayInMinutes: 0
+        includeMode: INCLUDE_ALL
+        severityLevel: CUSTOM_ALERT
+        tags:
+        - EnvironmentB:production
+        - Team:test
+      - delayInMinutes: 0
+        includeMode: INCLUDE_ALL
+        severityLevel: ERRORS
+        tags:
+        - EnvironmentC:production
+        - Team:test
+      - delayInMinutes: 0
+        includeMode: INCLUDE_ALL
+        severityLevel: MONITORING_UNAVAILABLE
+        tags:
+        - EnvironmentD:production
+        - Team:test
+      - delayInMinutes: 0
+        includeMode: INCLUDE_ALL
+        severityLevel: PERFORMANCE
+        tags:
+        - EnvironmentE:production
+        - Team:test
+      - delayInMinutes: 0
+        includeMode: INCLUDE_ALL
+        severityLevel: RESOURCE_CONTENTION
+        tags:
+        - EnvironmentF:production
+        - Team:test

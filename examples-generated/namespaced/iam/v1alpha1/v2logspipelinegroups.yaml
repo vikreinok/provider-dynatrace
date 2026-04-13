@@ -1,0 +1,155 @@
+apiVersion: iam.dynatrace.m.crossplane.io/v1alpha1
+kind: V2LogsPipelinegroups
+metadata:
+  annotations:
+    meta.upbound.io/example-id: iam/v1alpha1/v2logspipelinegroups
+  labels:
+    testing.upbound.io/example-name: example
+  name: example
+  namespace: crossplane-system
+spec:
+  forProvider:
+    composition:
+    - pipelineGroupComposition:
+      - isPipelinePlaceholder: true
+      - isPipelinePlaceholder: false
+        pipelineId: ${dynatrace_openpipeline_v2_logs_pipelines.example1.id}
+        stages:
+        - include:
+          - processing
+          - metricExtraction
+          type: include
+    displayName: '#name#'
+    memberPipelinesRefs:
+    - name: example2
+    memberStages:
+    - include:
+      - processing
+      - metricExtraction
+      type: include
+
+---
+
+apiVersion: iam.dynatrace.m.crossplane.io/v1alpha1
+kind: V2LogsPipelines
+metadata:
+  annotations:
+    meta.upbound.io/example-id: iam/v1alpha1/v2logspipelinegroups
+  labels:
+    testing.upbound.io/example-name: example1
+  name: example1
+  namespace: crossplane-system
+spec:
+  forProvider:
+    customId: '#name#'
+    displayName: '#name#'
+    groupRole: compositionPipeline
+    metricExtraction:
+    - processors:
+      - processor:
+        - counterMetric:
+          - dimensions:
+            - dimension:
+              - sourceFieldName: dt.cost.costcenter
+              - sourceFieldName: dt.cost.product
+              - sourceFieldName: dt.security_context
+              - destinationFieldName: warning_category
+                sourceFieldName: record.category
+            metricKey: warning.count
+          description: Count warnings
+          enabled: true
+          id: processor_Count_warning_events_6392
+          matcher: "true"
+          type: counterMetric
+        - description: Warning timeout
+          enabled: true
+          id: processor_Warning_timeout_1990
+          matcher: "true"
+          type: valueMetric
+          valueMetric:
+          - defaultValue: 60
+            dimensions:
+            - dimension:
+              - sourceFieldName: dt.cost.costcenter
+              - sourceFieldName: dt.cost.product
+              - sourceFieldName: dt.security_context
+              - destinationFieldName: warning_category
+                sourceFieldName: record.category
+            field: recording.timeout_in_min
+            metricKey: warning.timeout
+    processing:
+    - processors:
+      - processor:
+        - description: Drop unnecessary records
+          enabled: true
+          id: processor_Drop_unnecessary_records_3802
+          matcher: not matchesPhrase(record.name, "Warning")
+          type: drop
+        - description: Add warning flag
+          enabled: true
+          fieldsAdd:
+          - fields:
+            - field:
+              - name: is_warning
+                value: "true"
+          id: processor_Add_warning_flag_5434
+          matcher: matchesPhrase(record.name, "Warning")
+          sampleData: "{\n  \"record.name\": \"Warning record\" \n}"
+          type: fieldsAdd
+        - description: Remove details field
+          enabled: true
+          fieldsRemove:
+          - fields:
+            - record.details
+          id: processor_Remove_details_field_8539
+          matcher: isNotNull(record.details)
+          sampleData: |-
+            {
+              "record.name": "Warning",
+              "record.details": "some record details"
+            }
+          type: fieldsRemove
+        - description: Rename name to title
+          enabled: true
+          fieldsRename:
+          - fields:
+            - field:
+              - fromName: record.name
+                toName: record.title
+          id: processor_Rename_name_to_title_8530
+          matcher: "true"
+          sampleData: |-
+            {
+              "record.name": "Warning"
+            }
+          type: fieldsRename
+        - description: Combine title and summary to name
+          dql:
+          - script: fieldsAdd record.name = concat(record.title, " - ", record.summary)
+          enabled: true
+          id: processor_Combine_title_and_summary_to_name_8808
+          matcher: "true"
+          sampleData: |-
+            {
+              "record.title": "Warning",
+              "record.summary": "Request failed"
+            }
+          type: dql
+    routing: notRoutable
+
+---
+
+apiVersion: iam.dynatrace.m.crossplane.io/v1alpha1
+kind: V2LogsPipelines
+metadata:
+  annotations:
+    meta.upbound.io/example-id: iam/v1alpha1/v2logspipelinegroups
+  labels:
+    testing.upbound.io/example-name: example2
+  name: example2
+  namespace: crossplane-system
+spec:
+  forProvider:
+    customId: '#name#-2'
+    displayName: '#name#-2'
+    groupRole: memberPipeline

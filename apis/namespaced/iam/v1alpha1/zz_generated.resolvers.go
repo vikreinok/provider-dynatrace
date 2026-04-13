@@ -13,6 +13,50 @@ import (
 	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// ResolveReferences of this Alerting.
+func (mg *Alerting) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var rsp reference.NamespacedResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.ManagementZone),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.ManagementZoneRef,
+		Selector:     mg.Spec.ForProvider.ManagementZoneSelector,
+		To: reference.To{
+			List:    &ManagementZoneV2List{},
+			Managed: &ManagementZoneV2{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.ManagementZone")
+	}
+	mg.Spec.ForProvider.ManagementZone = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.ManagementZoneRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.ManagementZone),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.InitProvider.ManagementZoneRef,
+		Selector:     mg.Spec.InitProvider.ManagementZoneSelector,
+		To: reference.To{
+			List:    &ManagementZoneV2List{},
+			Managed: &ManagementZoneV2{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.ManagementZone")
+	}
+	mg.Spec.InitProvider.ManagementZone = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.ManagementZoneRef = rsp.ResolvedReference
+
+	return nil
+}
+
 // ResolveReferences of this PolicyBindingsV2.
 func (mg *PolicyBindingsV2) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPINamespacedResolver(c, mg)
@@ -130,6 +174,200 @@ func (mg *PolicyBindingsV2) ResolveReferences(ctx context.Context, c client.Read
 		mg.Spec.InitProvider.Policy[i3].ID = reference.ToPtrValue(rsp.ResolvedValue)
 		mg.Spec.InitProvider.Policy[i3].IDRef = rsp.ResolvedReference
 
+	}
+
+	return nil
+}
+
+// ResolveReferences of this V2LogsPipelinegroups.
+func (mg *V2LogsPipelinegroups) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var mrsp reference.MultiNamespacedResolutionResponse
+	var err error
+
+	mrsp, err = r.ResolveMultiple(ctx, reference.MultiNamespacedResolutionRequest{
+		CurrentValues: reference.FromPtrValues(mg.Spec.ForProvider.MemberPipelines),
+		Extract:       reference.ExternalName(),
+		Namespace:     mg.GetNamespace(),
+		References:    mg.Spec.ForProvider.MemberPipelinesRefs,
+		Selector:      mg.Spec.ForProvider.MemberPipelinesSelector,
+		To: reference.To{
+			List:    &V2LogsPipelinesList{},
+			Managed: &V2LogsPipelines{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.MemberPipelines")
+	}
+	mg.Spec.ForProvider.MemberPipelines = reference.ToPtrValues(mrsp.ResolvedValues)
+	mg.Spec.ForProvider.MemberPipelinesRefs = mrsp.ResolvedReferences
+
+	mrsp, err = r.ResolveMultiple(ctx, reference.MultiNamespacedResolutionRequest{
+		CurrentValues: reference.FromPtrValues(mg.Spec.InitProvider.MemberPipelines),
+		Extract:       reference.ExternalName(),
+		Namespace:     mg.GetNamespace(),
+		References:    mg.Spec.InitProvider.MemberPipelinesRefs,
+		Selector:      mg.Spec.InitProvider.MemberPipelinesSelector,
+		To: reference.To{
+			List:    &V2LogsPipelinesList{},
+			Managed: &V2LogsPipelines{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.MemberPipelines")
+	}
+	mg.Spec.InitProvider.MemberPipelines = reference.ToPtrValues(mrsp.ResolvedValues)
+	mg.Spec.InitProvider.MemberPipelinesRefs = mrsp.ResolvedReferences
+
+	return nil
+}
+
+// ResolveReferences of this V2LogsRouting.
+func (mg *V2LogsRouting) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var rsp reference.NamespacedResolutionResponse
+	var err error
+
+	for i3 := 0; i3 < len(mg.Spec.ForProvider.RoutingEntries); i3++ {
+		for i4 := 0; i4 < len(mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry); i4++ {
+			rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+				CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID),
+				Extract:      reference.ExternalName(),
+				Namespace:    mg.GetNamespace(),
+				Reference:    mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef,
+				Selector:     mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDSelector,
+				To: reference.To{
+					List:    &V2LogsPipelinesList{},
+					Managed: &V2LogsPipelines{},
+				},
+			})
+			if err != nil {
+				return errors.Wrap(err, "mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID")
+			}
+			mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID = reference.ToPtrValue(rsp.ResolvedValue)
+			mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef = rsp.ResolvedReference
+
+		}
+	}
+	for i3 := 0; i3 < len(mg.Spec.InitProvider.RoutingEntries); i3++ {
+		for i4 := 0; i4 < len(mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry); i4++ {
+			rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+				CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID),
+				Extract:      reference.ExternalName(),
+				Namespace:    mg.GetNamespace(),
+				Reference:    mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef,
+				Selector:     mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDSelector,
+				To: reference.To{
+					List:    &V2LogsPipelinesList{},
+					Managed: &V2LogsPipelines{},
+				},
+			})
+			if err != nil {
+				return errors.Wrap(err, "mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID")
+			}
+			mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID = reference.ToPtrValue(rsp.ResolvedValue)
+			mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef = rsp.ResolvedReference
+
+		}
+	}
+
+	return nil
+}
+
+// ResolveReferences of this V2SpansPipelinegroups.
+func (mg *V2SpansPipelinegroups) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var mrsp reference.MultiNamespacedResolutionResponse
+	var err error
+
+	mrsp, err = r.ResolveMultiple(ctx, reference.MultiNamespacedResolutionRequest{
+		CurrentValues: reference.FromPtrValues(mg.Spec.ForProvider.MemberPipelines),
+		Extract:       reference.ExternalName(),
+		Namespace:     mg.GetNamespace(),
+		References:    mg.Spec.ForProvider.MemberPipelinesRefs,
+		Selector:      mg.Spec.ForProvider.MemberPipelinesSelector,
+		To: reference.To{
+			List:    &V2SpansPipelinesList{},
+			Managed: &V2SpansPipelines{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.MemberPipelines")
+	}
+	mg.Spec.ForProvider.MemberPipelines = reference.ToPtrValues(mrsp.ResolvedValues)
+	mg.Spec.ForProvider.MemberPipelinesRefs = mrsp.ResolvedReferences
+
+	mrsp, err = r.ResolveMultiple(ctx, reference.MultiNamespacedResolutionRequest{
+		CurrentValues: reference.FromPtrValues(mg.Spec.InitProvider.MemberPipelines),
+		Extract:       reference.ExternalName(),
+		Namespace:     mg.GetNamespace(),
+		References:    mg.Spec.InitProvider.MemberPipelinesRefs,
+		Selector:      mg.Spec.InitProvider.MemberPipelinesSelector,
+		To: reference.To{
+			List:    &V2SpansPipelinesList{},
+			Managed: &V2SpansPipelines{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.MemberPipelines")
+	}
+	mg.Spec.InitProvider.MemberPipelines = reference.ToPtrValues(mrsp.ResolvedValues)
+	mg.Spec.InitProvider.MemberPipelinesRefs = mrsp.ResolvedReferences
+
+	return nil
+}
+
+// ResolveReferences of this V2SpansRouting.
+func (mg *V2SpansRouting) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var rsp reference.NamespacedResolutionResponse
+	var err error
+
+	for i3 := 0; i3 < len(mg.Spec.ForProvider.RoutingEntries); i3++ {
+		for i4 := 0; i4 < len(mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry); i4++ {
+			rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+				CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID),
+				Extract:      reference.ExternalName(),
+				Namespace:    mg.GetNamespace(),
+				Reference:    mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef,
+				Selector:     mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDSelector,
+				To: reference.To{
+					List:    &V2SpansPipelinesList{},
+					Managed: &V2SpansPipelines{},
+				},
+			})
+			if err != nil {
+				return errors.Wrap(err, "mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID")
+			}
+			mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID = reference.ToPtrValue(rsp.ResolvedValue)
+			mg.Spec.ForProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef = rsp.ResolvedReference
+
+		}
+	}
+	for i3 := 0; i3 < len(mg.Spec.InitProvider.RoutingEntries); i3++ {
+		for i4 := 0; i4 < len(mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry); i4++ {
+			rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+				CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID),
+				Extract:      reference.ExternalName(),
+				Namespace:    mg.GetNamespace(),
+				Reference:    mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef,
+				Selector:     mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDSelector,
+				To: reference.To{
+					List:    &V2SpansPipelinesList{},
+					Managed: &V2SpansPipelines{},
+				},
+			})
+			if err != nil {
+				return errors.Wrap(err, "mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID")
+			}
+			mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineID = reference.ToPtrValue(rsp.ResolvedValue)
+			mg.Spec.InitProvider.RoutingEntries[i3].RoutingEntry[i4].PipelineIDRef = rsp.ResolvedReference
+
+		}
 	}
 
 	return nil

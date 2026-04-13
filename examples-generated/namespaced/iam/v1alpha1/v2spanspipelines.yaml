@@ -1,0 +1,159 @@
+apiVersion: iam.dynatrace.m.crossplane.io/v1alpha1
+kind: V2SpansPipelines
+metadata:
+  annotations:
+    meta.upbound.io/example-id: iam/v1alpha1/v2spanspipelines
+  labels:
+    testing.upbound.io/example-name: max-pipeline
+  name: max-pipeline
+  namespace: crossplane-system
+spec:
+  forProvider:
+    customId: pipeline_Warning_pipeline_2773_tf_#name#
+    davis:
+    - processors:
+      - processor:
+        - davis:
+          - properties:
+            - property:
+              - key: event.type
+                value: CUSTOM_ALERT
+              - key: event.name
+                value: Warning detected
+              - key: event.description
+                value: 'Warning: {dims:record.summary}'
+          description: Create warning event
+          enabled: true
+          id: processor_Create_warning_event_8226
+          matcher: "true"
+          type: davis
+    displayName: Warning pipeline
+    metadataList:
+    - metadata:
+      - entryKey: environment
+        entryValue: production
+    metricExtraction:
+    - processors:
+      - processor:
+        - counterMetric:
+          - dimensions:
+            - dimension:
+              - sourceFieldName: dt.cost.costcenter
+              - sourceFieldName: dt.cost.product
+              - sourceFieldName: dt.security_context
+              - destinationFieldName: warning_category
+                sourceFieldName: record.category
+            metricKey: warning.count
+          description: Count warnings
+          enabled: true
+          id: processor_Count_warning_events_6392
+          matcher: "true"
+          type: counterMetric
+        - description: Warning timeout
+          enabled: true
+          id: processor_Warning_timeout_1990
+          matcher: "true"
+          type: valueMetric
+          valueMetric:
+          - defaultValue: 60
+            dimensions:
+            - dimension:
+              - sourceFieldName: dt.cost.costcenter
+              - sourceFieldName: dt.cost.product
+              - sourceFieldName: dt.security_context
+              - destinationFieldName: warning_category
+                sourceFieldName: record.category
+            field: recording.timeout_in_min
+            metricKey: warning.timeout
+    processing:
+    - processors:
+      - processor:
+        - description: Drop unnecessary records
+          enabled: true
+          id: processor_Drop_unnecessary_records_3802
+          matcher: not matchesPhrase(record.name, "Warning")
+          type: drop
+        - description: Add warning flag
+          enabled: true
+          fieldsAdd:
+          - fields:
+            - field:
+              - name: is_warning
+                value: "true"
+          id: processor_Add_warning_flag_5434
+          matcher: matchesPhrase(record.name, "Warning")
+          sampleData: "{\n  \"record.name\": \"Warning record\" \n}"
+          type: fieldsAdd
+        - description: Remove details field
+          enabled: true
+          fieldsRemove:
+          - fields:
+            - record.details
+          id: processor_Remove_details_field_8539
+          matcher: isNotNull(record.details)
+          sampleData: |-
+            {
+              "record.name": "Warning",
+              "record.details": "some record details"
+            }
+          type: fieldsRemove
+        - description: Rename name to title
+          enabled: true
+          fieldsRename:
+          - fields:
+            - field:
+              - fromName: record.name
+                toName: record.title
+          id: processor_Rename_name_to_title_8530
+          matcher: "true"
+          sampleData: |-
+            {
+              "record.name": "Warning"
+            }
+          type: fieldsRename
+        - description: Combine title and summary to name
+          dql:
+          - script: fieldsAdd record.name = concat(record.title, " - ", record.summary)
+          enabled: true
+          id: processor_Combine_title_and_summary_to_name_8808
+          matcher: "true"
+          sampleData: |-
+            {
+              "record.title": "Warning",
+              "record.summary": "Request failed"
+            }
+          type: dql
+    securityContext:
+    - processors:
+      - processor:
+        - description: Use dt.security_context if set
+          enabled: true
+          id: processor_Use_dt.security_context_if_set_1080
+          matcher: isNotNull(dt.security_context)
+          securityContext:
+          - value:
+            - field:
+              - sourceFieldName: dt.security_context
+              type: field
+          type: securityContext
+        - description: Assign warnings to ACME teams if no context set
+          enabled: true
+          id: processor_Assign_warnings_to_ACME_teams_if_no_context_set_5465
+          matcher: isNull(dt.security_context)
+          securityContext:
+          - value:
+            - multiValueConstant:
+              - ACME1
+              - ACME2
+              type: multiValueConstant
+          type: securityContext
+    storage:
+    - processors:
+      - processor:
+        - bucketAssignment:
+          - bucketName: default_events
+          description: Add to default bucket
+          enabled: true
+          id: processor_Add_to_default_bucket_5010
+          matcher: "true"
+          type: bucketAssignment

@@ -7,7 +7,13 @@
 package v1alpha1
 
 // Hub marks this type as a conversion hub.
+func (tr *Alerting) Hub() {}
+
+// Hub marks this type as a conversion hub.
 func (tr *Group) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *ManagementZoneV2) Hub() {}
 
 // Hub marks this type as a conversion hub.
 func (tr *Policy) Hub() {}
@@ -17,3 +23,21 @@ func (tr *PolicyBindingsV2) Hub() {}
 
 // Hub marks this type as a conversion hub.
 func (tr *PolicyBoundary) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *V2LogsPipelinegroups) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *V2LogsPipelines) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *V2LogsRouting) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *V2SpansPipelinegroups) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *V2SpansPipelines) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *V2SpansRouting) Hub() {}

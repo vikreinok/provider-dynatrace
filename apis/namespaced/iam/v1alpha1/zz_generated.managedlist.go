@@ -8,8 +8,26 @@ package v1alpha1
 
 import resource "github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 
+// GetItems of this AlertingList.
+func (l *AlertingList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
 // GetItems of this GroupList.
 func (l *GroupList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this ManagementZoneV2List.
+func (l *ManagementZoneV2List) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -37,6 +55,60 @@ func (l *PolicyBoundaryList) GetItems() []resource.Managed {
 
 // GetItems of this PolicyList.
 func (l *PolicyList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this V2LogsPipelinegroupsList.
+func (l *V2LogsPipelinegroupsList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this V2LogsPipelinesList.
+func (l *V2LogsPipelinesList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this V2LogsRoutingList.
+func (l *V2LogsRoutingList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this V2SpansPipelinegroupsList.
+func (l *V2SpansPipelinegroupsList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this V2SpansPipelinesList.
+func (l *V2SpansPipelinesList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this V2SpansRoutingList.
+func (l *V2SpansRoutingList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]

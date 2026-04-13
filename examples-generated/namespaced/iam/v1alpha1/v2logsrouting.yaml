@@ -1,0 +1,18 @@
+apiVersion: iam.dynatrace.m.crossplane.io/v1alpha1
+kind: V2LogsRouting
+metadata:
+  annotations:
+    meta.upbound.io/example-id: iam/v1alpha1/v2logsrouting
+  labels:
+    testing.upbound.io/example-name: routing
+  name: routing
+  namespace: crossplane-system
+spec:
+  forProvider:
+    routingEntries:
+    - routingEntry:
+      - builtinPipelineId: default
+        description: Default route
+        enabled: true
+        matcher: not matchesPhrase(record.title, "Warning")
+        pipelineType: builtin

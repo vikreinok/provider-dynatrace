@@ -7,10 +7,18 @@ import (
 // ExternalNameConfigs contains all external name configurations for this
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
-	"dynatrace_iam_group":              config.IdentifierFromProvider,
-	"dynatrace_iam_policy_boundary":    config.IdentifierFromProvider,
-	"dynatrace_iam_policy":             config.IdentifierFromProvider,
-	"dynatrace_iam_policy_bindings_v2": config.IdentifierFromProvider,
+	"dynatrace_iam_group":                            config.IdentifierFromProvider,
+	"dynatrace_iam_policy_boundary":                  config.IdentifierFromProvider,
+	"dynatrace_iam_policy":                           config.IdentifierFromProvider,
+	"dynatrace_iam_policy_bindings_v2":               config.IdentifierFromProvider,
+	"dynatrace_management_zone_v2":                   config.IdentifierFromProvider,
+	"dynatrace_alerting":                             config.IdentifierFromProvider,
+	"dynatrace_openpipeline_v2_logs_pipelines":       config.IdentifierFromProvider,
+	"dynatrace_openpipeline_v2_spans_pipelines":      config.IdentifierFromProvider,
+	"dynatrace_openpipeline_v2_logs_pipelinegroups":  config.IdentifierFromProvider,
+	"dynatrace_openpipeline_v2_spans_pipelinegroups": config.IdentifierFromProvider,
+	"dynatrace_openpipeline_v2_logs_routing":         config.IdentifierFromProvider,
+	"dynatrace_openpipeline_v2_spans_routing":        config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
