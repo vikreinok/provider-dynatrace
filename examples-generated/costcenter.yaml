@@ -1,0 +1,10 @@
+apiVersion: iam.dynatrace.crossplane.io/v1alpha1
+kind: CostCenter
+metadata:
+  name: example-costcenter
+spec:
+  forProvider:
+    key: "marketing-dept"
+    value: "Marketing Department Cost Center"
+  providerConfigRef:
+    name: default

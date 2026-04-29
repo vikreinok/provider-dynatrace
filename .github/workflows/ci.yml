@@ -141,7 +141,16 @@ jobs:
         run: make vendor vendor.check
 
       - name: Check Diff
-        run: make check-diff
+#        run: make check-diff because of custom resource
+        run: |
+          make generate
+          if git status --porcelain | grep -v "examples-generated/" | grep . ; then
+            echo "There are uncommitted changes after running make generate. Please ensure you commit all generated files in this branch after running make generate."
+            git status
+            false
+          else
+            echo "branch is clean"
+          fi
 
   unit-tests:
     runs-on: ubuntu-24.04

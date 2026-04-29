@@ -11,6 +11,7 @@ require (
 	github.com/crossplane/crossplane-tools v0.0.0-20251017183449-dd4517244339
 	github.com/crossplane/upjet/v2 v2.2.0
 	github.com/pkg/errors v0.9.1
+	golang.org/x/oauth2 v0.29.0
 	google.golang.org/grpc v1.72.1
 	k8s.io/api v0.34.3
 	k8s.io/apiextensions-apiserver v0.34.3
@@ -110,7 +111,6 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.27.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/oauth2 v0.29.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/term v0.34.0 // indirect
