@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
@@ -251,7 +252,13 @@ func (s *apiService) Create(ctx context.Context, key, value string) error {
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
 		b, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("unexpected status code %d: %s", resp.StatusCode, string(b))
+		msg := string(b)
+		// Cost centers are shared account-level resources. If another cluster
+		// already created this key, treat it as success (idempotent create).
+		if resp.StatusCode == http.StatusBadRequest && strings.Contains(msg, "already been stored") {
+			return nil
+		}
+		return fmt.Errorf("unexpected status code %d: %s", resp.StatusCode, msg)
 	}
 	return nil
 }
